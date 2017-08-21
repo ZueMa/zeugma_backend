@@ -1,5 +1,4 @@
 from django.http import HttpResponse, JsonResponse
-
 from .models import Buyer
 
 def current_buyer(request):
