@@ -2,15 +2,19 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Buyer
 
+import json
+
 @csrf_exempt
 def register(request):
     if(request.method != 'POST'):
         return
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    first_name = request.POST.get('first_name')
-    last_name = request.POST.get('last_name')
-    address = request.POST.get('address')
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    username = body['username']
+    password = body['password']
+    first_name = body['first_name']
+    last_name = body['last_name']
+    address = body['address']
     buyer = Buyer(
         username=username,
         password=password,
