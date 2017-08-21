@@ -1,11 +1,12 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 
 from .models import Buyer
 
 def current_buyer(request):
-    id = 1
     if 'id' in request.COOKIES:
         id = request.COOKIES['id']
+    else:
+        return HttpResponse(status=404)
     buyer = Buyer.objects.get(id=id)
     return JsonResponse({
         'id': buyer.id,
