@@ -3,7 +3,10 @@ from django.http import JsonResponse
 from .models import Buyer
 
 def current_buyer(request):
-    buyer = Buyer.objects.get(id=1)
+    id = 1
+    if 'id' in request.COOKIES:
+        id = request.COOKIES['id']
+    buyer = Buyer.objects.get(id=id)
     return JsonResponse({
         'id': buyer.id,
         'username': buyer.username,
