@@ -17,9 +17,9 @@ def register(request):
     password=body['password'],
     first_name=body['first_name'],
     last_name=body['last_name'],
-    company_name=['company_name'],
-    address=['address'],
-    description=['description']
+    company_name=body['company_name'],
+    address=body['address'],
+    description=body['description']
   ).save()
 
   return HttpResponse(status=204)
