@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class Seller(models.Model):
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=16)
@@ -9,7 +8,7 @@ class Seller(models.Model):
     company_name = models.CharField(max_length=32)
     address = models.TextField()
     description = models.TextField()
-
+    
     def __str__ (self):
-      return self.username
+        return self.username
         
