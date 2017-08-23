@@ -22,3 +22,20 @@ def register(request):
     ).save()
 
     return HttpResponse(status=204)
+
+def current_seller(request):
+    if ('id' not in request.COOKIES):
+        return HttpResponse(status=404)
+    
+    seller = Seller.objects.get(id=request.COOKIES['id'])
+
+    return JsonResponse({
+        'id': seller.id,
+        'username': seller.username,
+        'first_name': seller.first_name,
+        'last_name': seller.last_name,
+        'company_name': seller.company_name,
+        'address': seller.address,
+        'description': seller.description
+    })
+    
