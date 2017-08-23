@@ -36,6 +36,10 @@ def authenticate(request):
         except:
             return HttpResponse(status=500)
     elif (request.method == 'DELETE'):
-        return HttpResponse(status=501)
+        response = HttpResponse(status=204)
+        response.set_cookie('id', 0)
+        response.set_cookie('type', 'guest')
+
+        return response
     else:
         return HttpResponse(status=501)
