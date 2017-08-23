@@ -38,3 +38,4 @@ def current_seller(request):
         'address': seller.address,
         'description': seller.description
     })
+    
