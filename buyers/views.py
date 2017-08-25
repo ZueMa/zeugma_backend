@@ -22,7 +22,9 @@ def register(request):
     return HttpResponse(status=204)
 
 def current_buyer(request):
-    if ('id' not in request.COOKIES):
+    if (request.method != 'GET'):
+        return HttpResponse(status=501)
+    if ('id' not in request.COOKIES or request.COOKIES['id'] == '0'):
         return HttpResponse(status=404)
     
     buyer = Buyer.objects.get(id=request.COOKIES['id'])
