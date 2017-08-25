@@ -9,6 +9,6 @@ class Seller(models.Model):
     address = models.TextField()
     description = models.TextField()
     
-    def __str__ (self):
+    def __str__(self):
         return self.username
         
