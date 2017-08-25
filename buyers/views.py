@@ -1,4 +1,5 @@
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from .models import Buyer
 
@@ -24,10 +25,10 @@ def register(request):
 def current_buyer(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
-    if ('id' not in request.COOKIES or request.COOKIES['id'] == '0'):
+    if ('id' not in request.COOKIES):
         return HttpResponse(status=404)
     
-    buyer = Buyer.objects.get(id=request.COOKIES['id'])
+    buyer = get_object_or_404(Buyer, id=request.COOKIES['id'])
 
     return JsonResponse({
         'id': buyer.id,

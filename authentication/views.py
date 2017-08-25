@@ -1,4 +1,5 @@
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from buyers.models import Buyer
 from sellers.models import Seller
@@ -17,9 +18,9 @@ def authenticate(request):
 
         try:
             if (type == 'buyer'):
-                user = Buyer.objects.get(username=username)
+                user = get_object_or_404(Buyer, username=username)
             elif (type == 'seller'):
-                user = Seller.objects.get(username=username)
+                user = get_object_or_404(Seller, username=username)
             else:
                 return HttpResponse(status=400)
             
