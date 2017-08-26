@@ -25,13 +25,13 @@ def register(request):
 def current_buyer(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
-    if ('id' not in request.COOKIES):
+    if ('user_id' not in request.COOKIES):
         return HttpResponse(status=404)
     
-    buyer = get_object_or_404(Buyer, id=request.COOKIES['id'])
+    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
 
     return JsonResponse({
-        'id': buyer.id,
+        'buyer_id': buyer.id,
         'username': buyer.username,
         'first_name': buyer.first_name,
         'last_name': buyer.last_name,
