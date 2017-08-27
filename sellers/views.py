@@ -69,4 +69,22 @@ def create_product(request):
     return JsonResponse({
         'product_id': product.id
     }, status=201)
+
+@csrf_exempt
+def update_product(request, id):
+    if (request.method != 'PUT'):
+        return HttpResponse(status=501)
     
+    product = Product.objects.get(id=id)
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+
+    product.name=body['name']
+    product.category=body['category']
+    product.price=body['price']
+    product.num_stocks=body['num_stocks']
+    product.short_description=body['short_description']
+    product.full_description=body['full_description']
+    product.image=body['image']
+    product.save()
+    return HttpResponse(status=204)
