@@ -73,6 +73,7 @@ def create_product(request):
 @csrf_exempt
 def update_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+
     if (request.method == 'PUT'):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
@@ -85,9 +86,10 @@ def update_product(request, product_id):
         product.full_description = body['full_description']
         product.image = body['image']
         product.save()
+
         return HttpResponse(status=204)
     elif (request.method == 'DELETE'):
         product.delete()
         return HttpResponse(status=204)
-    else :
+    else:
         return HttpResponse(status=501)
