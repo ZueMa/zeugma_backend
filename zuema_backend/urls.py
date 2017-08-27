@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^buyers/', include('buyers.urls')),
     url(r'^sellers/', include('sellers.urls')),
     url(r'^authentication/', include('authentication.urls')),
-    # url(r'^products/', include('products.urls'))
+    url(r'^products/', include('products.urls'))
 ]
 
 if settings.DEBUG:
