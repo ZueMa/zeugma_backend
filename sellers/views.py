@@ -90,6 +90,7 @@ def update_product(request, product_id):
         return HttpResponse(status=204)
     elif (request.method == 'DELETE'):
         product.delete()
+
         return HttpResponse(status=204)
     else:
         return HttpResponse(status=501)
