@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from .models import Buyer
+from .models import Seller
 
 import json
 
@@ -9,31 +9,36 @@ import json
 def register(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
-
+  
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
-    Buyer(
+    Seller(
         username=body['username'],
         password=body['password'],
         first_name=body['first_name'],
         last_name=body['last_name'],
-        address=body['address']
+        company_name=body['company_name'],
+        address=body['address'],
+        description=body['description']
     ).save()
 
     return HttpResponse(status=204)
 
-def current_buyer(request):
+def current_seller(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
         return HttpResponse(status=404)
-    
-    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+
+    seller = get_object_or_404(Seller, id=request.COOKIES['user_id'])
 
     return JsonResponse({
-        'buyer_id': buyer.id,
-        'username': buyer.username,
-        'first_name': buyer.first_name,
-        'last_name': buyer.last_name,
-        'address': buyer.address
+        'seller_id': seller.id,
+        'username': seller.username,
+        'first_name': seller.first_name,
+        'last_name': seller.last_name,
+        'company_name': seller.company_name,
+        'address': seller.address,
+        'description': seller.description
     })
+    

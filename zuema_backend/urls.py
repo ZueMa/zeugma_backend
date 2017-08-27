@@ -18,5 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^buyers/', include('buyers.urls'))
+    url(r'^buyers/', include('buyers.urls')),
+    url(r'^sellers/', include('sellers.urls')),
+    url(r'^authentication/', include('authentication.urls'))
 ]
