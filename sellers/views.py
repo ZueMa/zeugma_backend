@@ -2,6 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from .models import Seller
+from products.models import Product
 
 import json
 
@@ -29,7 +30,6 @@ def current_seller(request):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
         return HttpResponse(status=404)
-
     seller = get_object_or_404(Seller, id=request.COOKIES['user_id'])
 
     return JsonResponse({
@@ -40,5 +40,30 @@ def current_seller(request):
         'company_name': seller.company_name,
         'address': seller.address,
         'description': seller.description
+    })
+
+@csrf_exempt
+def create_product(request):
+    if (request.method != 'POST'):
+        return HttpResponse(status=501)
+    if ('user_id' not in request.COOKIES):
+        return HttpResponse(status=404)
+    seller = get_object_or_404(Seller, id=request.COOKIES['user_id'])
+
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    product = Product(
+        name = body['name'],
+        category = body['category'],
+        price = body['price'],
+        num_stocks = body['num_stocks'],
+        short_description = body['short_description'],
+        full_description = body['full_description'],
+        image = body['image'],
+        seller = seller
+    )
+    product.save()
+    return JsonResponse({
+        'product_id': product.id
     })
     
