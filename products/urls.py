@@ -2,5 +2,5 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$',views.retrieveProducts)
+    url(r'^$', views.retrieve_all_products)
 ]
