@@ -5,5 +5,5 @@ urlpatterns = [
     url(r'^$', views.register),
     url(r'^me/$', views.current_seller),
     url(r'^me/products/$', views.create_product),
-    url(r'^me/products/(?P<id>\w{0,50})/$', views.update_product)
+    url(r'^me/products/(?P<product_id>\w{1,100})/$', views.update_product)
 ]
