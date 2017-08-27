@@ -72,20 +72,24 @@ def create_product(request):
 
 @csrf_exempt
 def update_product(request, product_id):
-    if (request.method != 'PUT'):
-        return HttpResponse(status=501)
-
     product = get_object_or_404(Product, id=product_id)
 
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
-    product.name = body['name']
-    product.category = body['category']
-    product.price = body['price']
-    product.num_stocks = body['num_stocks']
-    product.short_description = body['short_description']
-    product.full_description = body['full_description']
-    product.image = body['image']
-    product.save()
+    if (request.method == 'PUT'):
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
 
-    return HttpResponse(status=204)
+        product.name = body['name']
+        product.category = body['category']
+        product.price = body['price']
+        product.num_stocks = body['num_stocks']
+        product.short_description = body['short_description']
+        product.full_description = body['full_description']
+        product.image = body['image']
+        product.save()
+
+        return HttpResponse(status=204)
+    elif (request.method == 'DELETE'):
+        product.delete()
+        return HttpResponse(status=204)
+    else:
+        return HttpResponse(status=501)
