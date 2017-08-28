@@ -6,7 +6,7 @@ from .models import Buyer
 import json
 
 @csrf_exempt
-def register(request):
+def register_buyer(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
 
@@ -22,7 +22,7 @@ def register(request):
 
     return HttpResponse(status=204)
 
-def current_buyer(request):
+def retrieve_current_buyer(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
