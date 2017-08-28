@@ -7,7 +7,7 @@ from products.models import Product
 import json
 
 @csrf_exempt
-def register(request):
+def register_seller(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
   
@@ -25,7 +25,7 @@ def register(request):
 
     return HttpResponse(status=204)
 
-def current_seller(request):
+def retrieve_current_seller(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
@@ -44,7 +44,7 @@ def current_seller(request):
     })
 
 @csrf_exempt
-def create_product(request):
+def retrieve_and_create_product(request):
     if (request.method == 'GET'):
         if ('user_id' not in request.COOKIES):
             return HttpResponse(status=404)
@@ -93,10 +93,9 @@ def create_product(request):
         return HttpResponse(status=501)
 
 @csrf_exempt
-def update_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-
+def update_and_delete_product(request, product_id):
     if (request.method == 'PUT'):
+        product = get_object_or_404(Product, id=product_id)
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
 
@@ -111,6 +110,8 @@ def update_product(request, product_id):
 
         return HttpResponse(status=204)
     elif (request.method == 'DELETE'):
+        product = get_object_or_404(Product, id=product_id)
+
         product.delete()
 
         return HttpResponse(status=204)
