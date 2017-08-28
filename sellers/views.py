@@ -1,5 +1,5 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
 from .models import Seller
 from products.models import Product
@@ -45,16 +45,17 @@ def current_seller(request):
 
 @csrf_exempt
 def create_product(request):
-    if (request.method != 'POST'):
+    if (request.method != 'POST' and request.method != 'GET'):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
         return HttpResponse(status=404)
     
-    seller = get_object_or_404(Seller, id=request.COOKIES['user_id'])
+    if (request.method == 'POST'):
+        seller = get_object_or_404(Seller, id=request.COOKIES['user_id'])
 
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
-    product = Product(
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        product = Product(
         name=body['name'],
         category=body['category'],
         price=body['price'],
@@ -63,12 +64,31 @@ def create_product(request):
         full_description=body['full_description'],
         image=body['image'],
         seller=seller
-    )
-    product.save()
+        )
+        product.save()
 
-    return JsonResponse({
+        return JsonResponse({
         'product_id': product.id
-    }, status=201)
+        }, status=201)
+
+    else: 
+ 
+        seller = get_list_or_404(Product, id=request.COOKIES['user_id'])
+
+        products_response = []
+        for product in seller:
+            products_response.append({
+            'product_id': product.id,
+            'name': product.name,
+            'category':product.category,
+            'price': product.price,
+            'short_description': product.short_description,
+            'image': 'http://localhost:8000/' + str(product.image)
+            })
+        
+        return JsonResponse({
+            'products': products_response
+            })
 
 @csrf_exempt
 def update_product(request, product_id):
@@ -94,3 +114,7 @@ def update_product(request, product_id):
         return HttpResponse(status=204)
     else:
         return HttpResponse(status=501)
+
+
+    
+    
