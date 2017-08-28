@@ -60,7 +60,7 @@ def retrieve_and_create_product(request):
                 'category': product.category,
                 'price': product.price,
                 'short_description': product.short_description,
-                'image': 'http://localhost:8000/' + str(product.image)
+                'image': product.image
             })
 
         return JsonResponse({
