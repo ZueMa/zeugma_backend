@@ -24,7 +24,7 @@ class Cart(models.Model):
         return 'Cart #{}'.format(self.id)
 
 class ProductCart(models.Model):
-    num_items = models.IntegerField()
+    num_items = models.IntegerField(default=1)
     cart = models.ForeignKey(Cart)
     product = models.ForeignKey(Product)
 

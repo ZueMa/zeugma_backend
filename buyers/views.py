@@ -1,7 +1,8 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
-from .models import Buyer, Cart
+from .models import Buyer, Cart, ProductCart
+from products.models import Product
 
 import json
 
@@ -27,7 +28,7 @@ def retrieve_current_buyer(request):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
         return HttpResponse(status=404)
-    
+
     buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
 
     return JsonResponse({
@@ -55,19 +56,19 @@ def retrieve_cart(request):
     total_price = 0.0
     items_response = []
 
-    for item in items:
+    for item, product_cart in zip(items, get_list_or_404(ProductCart, cart=cart)):
         items_response.append({
-            'product_id': item.product.id,
-            'seller_id': item.product.seller_id,
-            'name': item.product.name,
-            'category': item.product.category,
-            'price': item.product.price,
-            'short_description': item.product.short_description,
-            'image': 'http://localhost:8000/images/{}'.format(item.product.image),
-            'num_items': item.num_items
+            'product_id': item.id,
+            'seller_id': item.seller_id,
+            'name': item.name,
+            'category': item.category,
+            'price': item.price,
+            'short_description': item.short_description,
+            'image': 'http://localhost:8000/images/{}'.format(item.image),
+            'num_items': product_cart.num_items
         })
-        total_items += item.num_items
-        total_price += item.product.price * item.num_items
+        total_items += product_cart.num_items
+        total_price += item.price * product_cart.num_items
 
     return JsonResponse({
         'cart_id': cart.id,
@@ -75,3 +76,27 @@ def retrieve_cart(request):
         'total_price': total_price,
         'items': items_response
     }, status=200)
+
+@csrf_exempt
+def add_item(request):
+    if (request.method != 'POST'):
+        return HttpResponse(status=501)
+    if ('user_id' not in request.COOKIES):
+        return HttpResponse(status=404)
+
+    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    try:
+        cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
+    except:
+        cart = Cart(buyer=buyer)
+        cart.save()
+
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    product_cart = ProductCart(
+        cart=cart,
+        product=get_object_or_404(Product, id=body['product_id'])
+    )
+    product_cart.save()
+
+    return HttpResponse(status=204)
