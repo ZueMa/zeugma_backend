@@ -49,8 +49,7 @@ def retrieve_and_create_product(request):
         if ('user_id' not in request.COOKIES):
             return HttpResponse(status=404)
 
-        products = get_list_or_404(Product, seller_id=request.COOKIES['user_id'])
-        products.reverse()
+        products = get_list_or_404(Product.objects.order_by('id'), seller_id=request.COOKIES['user_id'])
         products_response = []
 
         for product in products:
@@ -60,7 +59,7 @@ def retrieve_and_create_product(request):
                 'category': product.category,
                 'price': product.price,
                 'short_description': product.short_description,
-                'image': product.image
+                'image': 'http://localhost:8000/images/{}'.format(product.image)
             })
 
         return JsonResponse({
