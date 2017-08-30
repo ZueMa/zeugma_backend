@@ -75,7 +75,7 @@ def retrieve_cart(request):
         'total_items': total_items,
         'total_price': total_price,
         'items': items_response
-    }, status=200)
+    })
 
 @csrf_exempt
 def add_item(request):
