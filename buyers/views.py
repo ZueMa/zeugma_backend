@@ -1,7 +1,8 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from .models import Buyer, Cart
+from .models import Buyer, Cart, ProductCart
+from products.models import Product
 
 import json
 
@@ -75,3 +76,27 @@ def retrieve_cart(request):
         'total_price': total_price,
         'items': items_response
     }, status=200)
+
+@csrf_exempt
+def add_item(request):
+    if (request.method != 'POST'):
+        return HttpResponse(status=501)
+    if ('user_id' not in request.COOKIES):
+        return HttpResponse(status=404)
+
+    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    try:
+        cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
+    except:
+        cart = Cart(buyer=buyer)
+        cart.save()
+    
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    product_cart = ProductCart(
+        cart=cart,
+        product=get_object_or_404(Product, id=body['product_id'])
+    )
+    product_cart.save()
+
+    return HttpResponse(status=204)
