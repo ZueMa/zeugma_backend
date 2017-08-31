@@ -1,6 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import F
 from .models import Buyer, Cart, ProductCart
 from products.models import Product
 
@@ -47,16 +48,20 @@ def retrieve_cart(request):
 
     buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
     try:
-        cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
+        cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
     except:
         cart = Cart(buyer=buyer)
         cart.save()
     items = cart.items.all().order_by('id')
+    try:
+        product_carts = ProductCart.objects.filter(cart_id=cart.id)
+    except:
+        product_carts = []
     total_items = 0
     total_price = 0.0
     items_response = []
 
-    for item, product_cart in zip(items, get_list_or_404(ProductCart, cart=cart)):
+    for item, product_cart in zip(items, product_carts):
         items_response.append({
             'product_id': item.id,
             'seller_id': item.seller_id,
@@ -86,17 +91,23 @@ def add_item(request):
 
     buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
     try:
-        cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
+        cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
     except:
         cart = Cart(buyer=buyer)
         cart.save()
 
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
-    product_cart = ProductCart(
-        cart=cart,
-        product=get_object_or_404(Product, id=body['product_id'])
-    )
-    product_cart.save()
+    product = get_object_or_404(Product, id=body['product_id'])
+    try:
+        product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
+        product_cart.num_items = F('num_items') + 1
+        product_cart.save(update_fields=['num_items'])
+    except:
+        product_cart = ProductCart(
+            cart=cart,
+            product=product
+        )
+        product_cart.save()
 
     return HttpResponse(status=204)
