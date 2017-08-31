@@ -35,6 +35,7 @@ def retrieve_product_information(request, product_id):
         'category': product.category,
         'price': product.price,
         'num_stocks': product.num_stocks,
+        'short_description': product.short_description,
         'full_description': product.full_description,
-            'image': 'http://localhost:8000/images/{}'.format(product.image)
+        'image': 'http://localhost:8000/images/{}'.format(product.image)
     })
