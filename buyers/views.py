@@ -64,10 +64,9 @@ def retrieve_cart(request):
     for item, product_cart in zip(items, product_carts):
         items_response.append({
             'product_id': item.id,
-            'seller_id': item.seller_id,
             'name': item.name,
-            'category': item.category,
             'price': item.price,
+            'num_stocks': item.num_stocks,
             'short_description': item.short_description,
             'image': 'http://localhost:8000/images/{}'.format(item.image),
             'num_items': product_cart.num_items
