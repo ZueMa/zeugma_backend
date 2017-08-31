@@ -52,11 +52,12 @@ def retrieve_cart(request):
         cart = Cart(buyer=buyer)
         cart.save()
     items = cart.items.all().order_by('id')
+    product_carts = get_list_or_404(ProductCart, cart=cart)
     total_items = 0
     total_price = 0.0
     items_response = []
 
-    for item, product_cart in zip(items, get_list_or_404(ProductCart, cart=cart)):
+    for item, product_cart in zip(items, product_carts):
         items_response.append({
             'product_id': item.id,
             'seller_id': item.seller_id,
