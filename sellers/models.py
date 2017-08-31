@@ -8,7 +8,6 @@ class Seller(models.Model):
     company_name = models.CharField(max_length=32)
     address = models.TextField()
     description = models.TextField()
-    
+
     def __str__(self):
         return self.username
-        

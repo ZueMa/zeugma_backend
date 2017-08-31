@@ -20,9 +20,9 @@ def retrieve_all_products(request):
             'short_description': product.short_description,
             'image': 'http://localhost:8000/images/{}'.format(product.image)
         })
-    
+
     return JsonResponse({'products': products_response})
-   
+
 def retrieve_product_information(request, product_id):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
