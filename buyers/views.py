@@ -82,7 +82,7 @@ def retrieve_cart(request):
     })
 
 @csrf_exempt
-def add_item(request):
+def update_item_quantity(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
@@ -98,21 +98,31 @@ def add_item(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     product = get_object_or_404(Product, id=body['product_id'])
-    try:
-        product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
-        if (product_cart.num_items == product.num_stocks):
-            return JsonResponse({
-                'status': 'Cannot exceed product\'s stocks!'
-            }, status=202)
-        product_cart.num_items = F('num_items') + 1
-        product_cart.save(update_fields=['num_items'])
-    except:
-        product_cart = ProductCart(
-            cart=cart,
-            product=product
-        )
-        product_cart.save()
+    if (body['action'] == 'increase'):
+        try:
+            product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
+            if (product_cart.num_items == product.num_stocks):
+                return JsonResponse({
+                    'alert': 'Cannot exceed product\'s stocks!'
+                }, status=400)
+            product_cart.num_items = F('num_items') + 1
+            product_cart.save(update_fields=['num_items'])
+        except:
+            product_cart = ProductCart(
+                cart=cart,
+                product=product
+            )
+            product_cart.save()
+    else:
+        try:
+            product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
+            if (product_cart.num_items == 1):
+                return JsonResponse({
+                    'alert': 'Cannot have 0 number of item!'
+                }, status=400)
+            product_cart.num_items = F('num_items') - 1
+            product_cart.save(update_fields=['num_items'])
+        except:
+            pass
 
-    return JsonResponse({
-        'status': 'Product added!'
-    }, status=201)
+    return HttpResponse(status=204)
