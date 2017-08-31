@@ -8,7 +8,7 @@ def retrieve_all_products(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
 
-    products_list = get_list_or_404(Product.objects.order_by('id'))
+    products_list = get_list_or_404(Product.objects.exclude(num_stocks=0).order_by('id'))
     products_response = []
 
     for product in products_list:
