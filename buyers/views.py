@@ -101,6 +101,10 @@ def add_item(request):
     product = get_object_or_404(Product, id=body['product_id'])
     try:
         product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
+        if (product_cart.num_items == product.num_stocks):
+            return JsonResponse({
+                'status': 'Cannot exceed product\'s stocks!'
+            }, status=202)
         product_cart.num_items = F('num_items') + 1
         product_cart.save(update_fields=['num_items'])
     except:
@@ -110,4 +114,6 @@ def add_item(request):
         )
         product_cart.save()
 
-    return HttpResponse(status=204)
+    return JsonResponse({
+        'status': 'Product added!'
+    }, status=201)
