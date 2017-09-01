@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import F
 from .models import Buyer, Cart, ProductCart, Purchase
 from products.models import Product
+from sellers.models import Seller, Order
 
 import json
 
@@ -169,8 +170,20 @@ def purchase_cart(request):
         return HttpResponse(status=404)
 
     buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
-    cart = get_object_or_404(Cart, buyer_id=buyer.id)
+    cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
+    items = cart.items.all().order_by('id')
+    try:
+        product_carts = ProductCart.objects.filter(cart_id=cart.id)
+    except:
+        product_carts = []
 
+    for item, product_cart in zip(items, product_carts):
+        Order(
+            product=item,
+            seller=item.seller,
+            num_items=product_cart.num_items,
+            revenue=item.price * product_cart.num_items
+        ).save()
     purchase = Purchase(
         cart=cart,
         buyer=buyer
