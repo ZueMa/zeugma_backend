@@ -82,7 +82,7 @@ def retrieve_cart(request):
     })
 
 @csrf_exempt
-def update_item_quantity(request):
+def add_item_to_cart(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
     if ('user_id' not in request.COOKIES):
@@ -98,28 +98,50 @@ def update_item_quantity(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     product = get_object_or_404(Product, id=body['product_id'])
+    try:
+        product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
+
+        return JsonResponse({
+            'alert': 'Product is already in cart!'
+        }, status=400)
+    except:
+        ProductCart(
+            cart=cart,
+            product=product
+        ).save()
+
+        return HttpResponse(status=204)
+
+@csrf_exempt
+def update_item_quantity(request, item_id):
+    if (request.method != 'POST'):
+        return HttpResponse(status=501)
+    if ('user_id' not in request.COOKIES):
+        return HttpResponse(status=404)
+
+    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    try:
+        cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
+    except:
+        cart = Cart(buyer=buyer)
+        cart.save()
+
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    product = get_object_or_404(Product, id=item_id)
+    product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
     if (body['action'] == 'increase'):
-        try:
-            product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
-            if (product_cart.num_items == product.num_stocks):
-                return JsonResponse({
-                    'alert': 'Cannot exceed product\'s stocks!'
-                }, status=400)
-            product_cart.num_items = F('num_items') + 1
-            product_cart.save(update_fields=['num_items'])
-        except:
-            product_cart = ProductCart(
-                cart=cart,
-                product=product
-            )
-            product_cart.save()
+        if (product_cart.num_items == product.num_stocks):
+            return JsonResponse({
+                'alert': 'Cannot exceed product\'s stocks!'
+            }, status=400)
+        product_cart.num_items = F('num_items') + 1
     else:
-        product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
         if (product_cart.num_items == 1):
             return JsonResponse({
                 'alert': 'Cannot have 0 number of item!'
             }, status=400)
         product_cart.num_items = F('num_items') - 1
-        product_cart.save(update_fields=['num_items'])
+    product_cart.save(update_fields=['num_items'])
 
     return HttpResponse(status=204)
