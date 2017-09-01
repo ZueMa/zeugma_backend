@@ -113,35 +113,50 @@ def add_item_to_cart(request):
         return HttpResponse(status=204)
 
 @csrf_exempt
-def update_item_quantity(request, item_id):
-    if (request.method != 'POST'):
-        return HttpResponse(status=501)
-    if ('user_id' not in request.COOKIES):
-        return HttpResponse(status=404)
+def update_and_delete_item(request, item_id):
+    if (request.method == 'POST'):
+        if ('user_id' not in request.COOKIES):
+            return HttpResponse(status=404)
 
-    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
-    try:
-        cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
-    except:
-        cart = Cart(buyer=buyer)
-        cart.save()
+        buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+        try:
+            cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
+        except:
+            cart = Cart(buyer=buyer)
+            cart.save()
+        product = get_object_or_404(Product, id=item_id)
+        product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
 
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
-    product = get_object_or_404(Product, id=item_id)
-    product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
-    if (body['action'] == 'increase'):
-        if (product_cart.num_items == product.num_stocks):
-            return JsonResponse({
-                'alert': 'Cannot exceed product\'s stocks!'
-            }, status=400)
-        product_cart.num_items = F('num_items') + 1
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        if (body['action'] == 'increase'):
+            if (product_cart.num_items == product.num_stocks):
+                return JsonResponse({
+                    'alert': 'Cannot exceed product\'s stocks!'
+                }, status=400)
+            product_cart.num_items = F('num_items') + 1
+        else:
+            if (product_cart.num_items == 1):
+                return JsonResponse({
+                    'alert': 'Cannot have 0 number of item!'
+                }, status=400)
+            product_cart.num_items = F('num_items') - 1
+        product_cart.save(update_fields=['num_items'])
+
+        return HttpResponse(status=204)
+    elif (request.method == 'DELETE'):
+        if ('user_id' not in request.COOKIES):
+            return HttpResponse(status=404)
+
+        buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+        cart = get_object_or_404(Cart, buyer_id=buyer.id)
+        product = get_object_or_404(Product, id=item_id)
+
+        try:
+            get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id).delete()
+        except:
+            return HttpResponse(status=404)
+
+        return HttpResponse(status=204)
     else:
-        if (product_cart.num_items == 1):
-            return JsonResponse({
-                'alert': 'Cannot have 0 number of item!'
-            }, status=400)
-        product_cart.num_items = F('num_items') - 1
-    product_cart.save(update_fields=['num_items'])
-
-    return HttpResponse(status=204)
+        return HttpResponse(status=501)
