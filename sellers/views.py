@@ -10,7 +10,7 @@ import json
 def register_seller(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
-  
+
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     Seller(

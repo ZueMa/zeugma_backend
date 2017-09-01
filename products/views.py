@@ -8,7 +8,7 @@ def retrieve_all_products(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
 
-    products_list = get_list_or_404(Product.objects.order_by('id'))
+    products_list = get_list_or_404(Product.objects.exclude(num_stocks=0).order_by('id'))
     products_response = []
 
     for product in products_list:
@@ -20,9 +20,9 @@ def retrieve_all_products(request):
             'short_description': product.short_description,
             'image': 'http://localhost:8000/images/{}'.format(product.image)
         })
-    
+
     return JsonResponse({'products': products_response})
-   
+
 def retrieve_product_information(request, product_id):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
@@ -35,6 +35,7 @@ def retrieve_product_information(request, product_id):
         'category': product.category,
         'price': product.price,
         'num_stocks': product.num_stocks,
+        'short_description': product.short_description,
         'full_description': product.full_description,
-            'image': 'http://localhost:8000/images/{}'.format(product.image)
+        'image': 'http://localhost:8000/images/{}'.format(product.image)
     })

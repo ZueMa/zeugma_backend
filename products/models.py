@@ -1,5 +1,4 @@
 from django.db import models
-from sellers.models import Seller
 
 class Product(models.Model):
     name = models.CharField(max_length=32)
@@ -13,10 +12,10 @@ class Product(models.Model):
         blank=True
     )
     seller = models.ForeignKey(
-        Seller,
+        'sellers.Seller',
         models.SET_NULL,
         null=True
     )
 
     def __str__(self):
-        return self.name
+        return 'Product #{}'.format(self.id)

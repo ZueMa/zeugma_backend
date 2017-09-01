@@ -23,7 +23,7 @@ def authenticate(request):
                 user = get_object_or_404(Seller, username=username)
             else:
                 return HttpResponse(status=400)
-            
+
             if (user.password == password):
                 response = HttpResponse(status=204)
                 response.set_cookie('user_id', user.id)
