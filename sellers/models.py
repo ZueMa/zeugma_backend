@@ -10,11 +10,11 @@ class Seller(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return self.username
+        return 'Seller #{}'.format(self.id)
 
 class Order(models.Model):
+    seller = models.ForeignKey('Seller')
     product = models.ForeignKey('products.Product')
-    seller = models.ForeignKey(Seller)
     num_items = models.IntegerField()
     revenue = models.FloatField()
     timestamp = models.DateField(auto_now_add=True)

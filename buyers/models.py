@@ -1,5 +1,4 @@
 from django.db import models
-from products.models import Product
 
 class Buyer(models.Model):
     username = models.CharField(max_length=32)
@@ -9,13 +8,13 @@ class Buyer(models.Model):
     address = models.TextField()
 
     def __str__(self):
-        return self.username
+        return 'Buyer #{}'.format(self.id)
 
 class Cart(models.Model):
+    buyer = models.ForeignKey('Buyer')
     is_purchased = models.BooleanField(default=False)
-    buyer = models.ForeignKey(Buyer)
     items = models.ManyToManyField(
-        Product,
+        'products.Product',
         through='ProductCart',
         through_fields=('cart', 'product')
     )
@@ -24,16 +23,16 @@ class Cart(models.Model):
         return 'Cart #{}'.format(self.id)
 
 class ProductCart(models.Model):
+    product = models.ForeignKey('products.Product')
+    cart = models.ForeignKey('Cart')
     num_items = models.IntegerField(default=1)
-    cart = models.ForeignKey(Cart)
-    product = models.ForeignKey(Product)
 
     def __str__(self):
-        return 'Product #{} in Cart #{}'.format(self.product.id, self.cart.id)
+        return 'ProductCart #{}'.format(self.id)
 
 class Purchase(models.Model):
-    cart = models.ForeignKey(Cart)
-    buyer = models.ForeignKey(Buyer)
+    buyer = models.ForeignKey('Buyer')
+    cart = models.ForeignKey('Cart')
     is_shipped = models.BooleanField(default=False)
     timestamp = models.DateField(auto_now_add=True)
 
