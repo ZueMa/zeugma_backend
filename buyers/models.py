@@ -30,3 +30,12 @@ class ProductCart(models.Model):
 
     def __str__(self):
         return 'Product #{} in Cart #{}'.format(self.product.id, self.cart.id)
+
+class Purchase(models.Model):
+    cart = models.ForeignKey(Cart)
+    buyer = models.ForeignKey(Buyer)
+    is_shipped = models.BooleanField(default=False)
+    timestamp = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Purchase #{}'.format(self.id)

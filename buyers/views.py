@@ -2,8 +2,9 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import F
-from .models import Buyer, Cart, ProductCart
+from .models import Buyer, Cart, ProductCart, Purchase
 from products.models import Product
+from sellers.models import Seller, Order
 
 import json
 
@@ -160,3 +161,37 @@ def update_and_delete_item(request, item_id):
         return HttpResponse(status=204)
     else:
         return HttpResponse(status=501)
+
+@csrf_exempt
+def purchase_cart(request):
+    if (request.method != 'POST'):
+        return HttpResponse(status=501)
+    if ('user_id' not in request.COOKIES):
+        return HttpResponse(status=404)
+
+    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
+    items = cart.items.all().order_by('id')
+    try:
+        product_carts = ProductCart.objects.filter(cart_id=cart.id)
+    except:
+        product_carts = []
+
+    for item, product_cart in zip(items, product_carts):
+        Order(
+            product=item,
+            seller=item.seller,
+            num_items=product_cart.num_items,
+            revenue=item.price * product_cart.num_items
+        ).save()
+    purchase = Purchase(
+        cart=cart,
+        buyer=buyer
+    )
+    purchase.save()
+    cart.is_purchased = True
+    cart.save(update_fields=['is_purchased'])
+
+    return JsonResponse({
+        'purchase_id': purchase.id
+    }, status=201)

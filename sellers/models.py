@@ -11,3 +11,13 @@ class Seller(models.Model):
 
     def __str__(self):
         return self.username
+
+class Order(models.Model):
+    product = models.ForeignKey('products.Product')
+    seller = models.ForeignKey(Seller)
+    num_items = models.IntegerField()
+    revenue = models.FloatField()
+    timestamp = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Order #{}'.format(self.id)
