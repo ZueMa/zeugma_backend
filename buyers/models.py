@@ -9,6 +9,7 @@ class Buyer(models.Model):
 
     def __str__(self):
         return 'Buyer #{}'.format(self.id)
+
 class Cart(models.Model):
     buyer = models.ForeignKey('Buyer')
     is_purchased = models.BooleanField(default=False)
