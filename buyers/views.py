@@ -114,15 +114,12 @@ def update_item_quantity(request):
             )
             product_cart.save()
     else:
-        try:
-            product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
-            if (product_cart.num_items == 1):
-                return JsonResponse({
-                    'alert': 'Cannot have 0 number of item!'
-                }, status=400)
-            product_cart.num_items = F('num_items') - 1
-            product_cart.save(update_fields=['num_items'])
-        except:
-            pass
+        product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
+        if (product_cart.num_items == 1):
+            return JsonResponse({
+                'alert': 'Cannot have 0 number of item!'
+            }, status=400)
+        product_cart.num_items = F('num_items') - 1
+        product_cart.save(update_fields=['num_items'])
 
     return HttpResponse(status=204)
