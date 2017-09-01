@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import F
-from .models import Buyer, Cart, ProductCart
+from .models import Buyer, Cart, ProductCart, Purchase
 from products.models import Product
 
 import json
@@ -160,3 +160,25 @@ def update_and_delete_item(request, item_id):
         return HttpResponse(status=204)
     else:
         return HttpResponse(status=501)
+
+@csrf_exempt
+def purchase_cart(request):
+    if (request.method != 'POST'):
+        return HttpResponse(status=501)
+    if ('user_id' not in request.COOKIES):
+        return HttpResponse(status=404)
+
+    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    cart = get_object_or_404(Cart, buyer_id=buyer.id)
+
+    purchase = Purchase(
+        cart=cart,
+        buyer=buyer
+    )
+    purchase.save()
+    cart.is_purchased = True
+    cart.save(update_fields=['is_purchased'])
+
+    return JsonResponse({
+        'purchase_id': purchase.id
+    }, status=201)
