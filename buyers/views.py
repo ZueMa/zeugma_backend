@@ -182,12 +182,14 @@ def purchase_cart(request, buyer_id):
         'purchase_id': purchase.id
     }, status=201)
 
-def purchase_history(request, buyer_id):
+def retrieve_purchase_history(request, buyer_id):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
+
     buyer = get_object_or_404(Buyer, id=buyer_id)
     purchases_list = get_list_or_404(Purchase.objects.all().order_by('id'))
     purchases_response = []
+
     for purchase in purchases_list:
         items = purchase.cart.items.all().order_by('id')
         try:
@@ -196,6 +198,7 @@ def purchase_history(request, buyer_id):
             product_carts = []
         total_items = 0
         total_price = 0.0
+
         for item, product_cart in zip(items, product_carts):
             total_items += product_cart.num_items
             total_price += item.price * product_cart.num_items
@@ -205,8 +208,9 @@ def purchase_history(request, buyer_id):
             "total_items": total_items,
             "total_price": total_price,
             "is_shipped": True,
-            # "is_shipped": purchase.is_shipped,
             "timestamp": purchase.timestamp
         })
 
-    return JsonResponse({'purchases': purchases_response})
+    return JsonResponse({
+        'purchases': purchases_response
+    })
