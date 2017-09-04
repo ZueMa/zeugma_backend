@@ -173,7 +173,7 @@ def retrieve_purchase_history(request, buyer_id):
         return HttpResponse(status=405)
 
     buyer = get_object_or_404(Buyer, id=buyer_id)
-    purchases_list = get_list_or_404(Purchase.objects.all().order_by('id'))
+    purchases_list = get_list_or_404(Purchase.objects.all().order_by('-id'))
     purchases_response = []
 
     for purchase in purchases_list:
