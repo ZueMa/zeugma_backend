@@ -10,25 +10,24 @@ import json
 @csrf_exempt
 def register_seller(request):
     if (request.method != 'POST'):
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
 
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
+    request_body = json.loads(request.body.decode('utf-8'))
     Seller(
-        username=body['username'],
-        password=body['password'],
-        first_name=body['first_name'],
-        last_name=body['last_name'],
-        company_name=body['company_name'],
-        address=body['address'],
-        description=body['description']
+        username=request_body['username'],
+        password=request_body['password'],
+        first_name=request_body['first_name'],
+        last_name=request_body['last_name'],
+        company_name=request_body['company_name'],
+        address=request_body['address'],
+        description=request_body['description']
     ).save()
 
     return HttpResponse(status=204)
 
 def retrieve_current_seller(request, seller_id):
     if (request.method != 'GET'):
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
 
     seller = get_object_or_404(Seller, id=seller_id)
 
@@ -45,10 +44,10 @@ def retrieve_current_seller(request, seller_id):
 @csrf_exempt
 def retrieve_and_create_product(request, seller_id):
     if (request.method == 'GET'):
-        products = get_list_or_404(Product.objects.order_by('id'), seller_id=seller_id)
+        products_list = get_list_or_404(Product.objects.order_by('id'), seller_id=seller_id)
         products_response = []
 
-        for product in products:
+        for product in products_list:
             products_response.append({
                 'product_id': product.id,
                 'name': product.name,
@@ -64,16 +63,15 @@ def retrieve_and_create_product(request, seller_id):
     elif (request.method == 'POST'):
         seller = get_object_or_404(Seller, id=seller_id)
 
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
+        request_body = json.loads(request.body.decode('utf-8'))
         product = Product(
-            name=body['name'],
-            category=body['category'],
-            price=body['price'],
-            num_stocks=body['num_stocks'],
-            short_description=body['short_description'],
-            full_description=body['full_description'],
-            image=body['image'],
+            name=request_body['name'],
+            category=request_body['category'],
+            price=request_body['price'],
+            num_stocks=request_body['num_stocks'],
+            short_description=request_body['short_description'],
+            full_description=request_body['full_description'],
+            image=request_body['image'],
             seller=seller
         )
         product.save()
@@ -82,22 +80,21 @@ def retrieve_and_create_product(request, seller_id):
             'product_id': product.id
         }, status=201)
     else: 
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
 
 @csrf_exempt
 def update_and_delete_product(request, seller_id, product_id):
     if (request.method == 'PUT'):
         product = get_object_or_404(Product, id=product_id)
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
 
-        product.name = body['name']
-        product.category = body['category']
-        product.price = body['price']
-        product.num_stocks = body['num_stocks']
-        product.short_description = body['short_description']
-        product.full_description = body['full_description']
-        product.image = body['image']
+        request_body = json.loads(request.body.decode('utf-8'))
+        product.name = request_body['name']
+        product.category = request_body['category']
+        product.price = request_body['price']
+        product.num_stocks = request_body['num_stocks']
+        product.short_description = request_body['short_description']
+        product.full_description = request_body['full_description']
+        product.image = request_body['image']
         product.save()
 
         return HttpResponse(status=204)
@@ -109,11 +106,11 @@ def update_and_delete_product(request, seller_id, product_id):
 
         return HttpResponse(status=204)
     else:
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
 
 def retrieve_order_history(request, seller_id):
     if (request.method != 'GET'):
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
 
     orders_list = get_list_or_404(Order.objects.all().order_by('id'))
     orders_response = []
