@@ -112,7 +112,7 @@ def retrieve_order_history(request, seller_id):
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
-    orders_list = get_list_or_404(Order.objects.all().order_by('-id'))
+    orders_list = get_list_or_404(Order.objects.filter(seller_id=seller_id).order_by('-id'))
     orders_response = []
 
     for order in orders_list:
