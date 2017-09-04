@@ -120,9 +120,7 @@ def update_and_delete_item(request, buyer_id, item_id):
             product_cart.num_items = F('num_items') + 1
         else:
             if (product_cart.num_items == 1):
-                return JsonResponse({
-                    'alert': 'Cannot have 0 number of item!'
-                }, status=400)
+                return HttpResponse(status=304)
             product_cart.num_items = F('num_items') - 1
         product_cart.save(update_fields=['num_items'])
 
