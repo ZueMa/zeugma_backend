@@ -1,12 +1,12 @@
 from django.http import HttpResponse, JsonResponse
-from .models import Product
 from django.shortcuts import get_list_or_404, get_object_or_404
+from .models import Product
 
 import json
 
 def retrieve_all_products(request):    
     if (request.method != 'GET'):
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
 
     products_list = get_list_or_404(Product.objects.exclude(num_stocks=0).order_by('id'))
     products_response = []
@@ -21,11 +21,13 @@ def retrieve_all_products(request):
             'image': 'http://localhost:8000/images/{}'.format(product.image)
         })
 
-    return JsonResponse({'products': products_response})
+    return JsonResponse({
+        'products': products_response
+    })
 
 def retrieve_product_information(request, product_id):
     if (request.method != 'GET'):
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
 
     product = get_object_or_404(Product, id=product_id)
 

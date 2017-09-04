@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
-
 class Migration(migrations.Migration):
 
     initial = True
@@ -23,7 +22,7 @@ class Migration(migrations.Migration):
                 ('num_stocks', models.IntegerField()),
                 ('short_description', models.TextField()),
                 ('full_description', models.TextField()),
-                ('image', models.URLField(blank=True, null=True)),
-            ],
-        ),
+                ('image', models.URLField(blank=True, null=True))
+            ]
+        )
     ]
