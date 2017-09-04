@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
-
 class Migration(migrations.Migration):
 
     initial = True
@@ -22,23 +21,23 @@ class Migration(migrations.Migration):
                 ('password', models.CharField(max_length=16)),
                 ('first_name', models.CharField(max_length=32)),
                 ('last_name', models.CharField(max_length=32)),
-                ('address', models.TextField()),
-            ],
+                ('address', models.TextField())
+            ]
         ),
         migrations.CreateModel(
             name='Cart',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_purchased', models.BooleanField(default=False)),
-            ],
+                ('is_purchased', models.BooleanField(default=False))
+            ]
         ),
         migrations.CreateModel(
             name='ProductCart',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('num_items', models.IntegerField(default=1)),
-                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='buyers.Cart')),
-            ],
+                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='buyers.Cart'))
+            ]
         ),
         migrations.CreateModel(
             name='Purchase',
@@ -47,7 +46,7 @@ class Migration(migrations.Migration):
                 ('is_shipped', models.BooleanField(default=False)),
                 ('timestamp', models.DateField(auto_now_add=True)),
                 ('buyer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='buyers.Buyer')),
-                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='buyers.Cart')),
-            ],
-        ),
+                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='buyers.Cart'))
+            ]
+        )
     ]

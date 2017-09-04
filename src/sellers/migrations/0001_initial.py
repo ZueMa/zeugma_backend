@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
-
 class Migration(migrations.Migration):
 
     initial = True
@@ -22,8 +21,8 @@ class Migration(migrations.Migration):
                 ('num_items', models.IntegerField()),
                 ('revenue', models.FloatField()),
                 ('timestamp', models.DateField(auto_now_add=True)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.Product')),
-            ],
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.Product'))
+            ]
         ),
         migrations.CreateModel(
             name='Seller',
@@ -35,12 +34,12 @@ class Migration(migrations.Migration):
                 ('last_name', models.CharField(max_length=32)),
                 ('company_name', models.CharField(max_length=32)),
                 ('address', models.TextField()),
-                ('description', models.TextField()),
-            ],
+                ('description', models.TextField())
+            ]
         ),
         migrations.AddField(
             model_name='order',
             name='seller',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sellers.Seller'),
-        ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sellers.Seller')
+        )
     ]
