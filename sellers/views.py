@@ -28,10 +28,10 @@ def register_seller(request):
 def retrieve_current_seller(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
-    if ('user_id' not in request.COOKIES):
-        return HttpResponse(status=404)
 
-    seller = get_object_or_404(Seller, id=request.COOKIES['user_id'])
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    seller = get_object_or_404(Seller, id=body['user_id'])
 
     return JsonResponse({
         'seller_id': seller.id,
@@ -46,10 +46,9 @@ def retrieve_current_seller(request):
 @csrf_exempt
 def retrieve_and_create_product(request):
     if (request.method == 'GET'):
-        if ('user_id' not in request.COOKIES):
-            return HttpResponse(status=404)
-
-        products = get_list_or_404(Product.objects.order_by('id'), seller_id=request.COOKIES['user_id'])
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        products = get_list_or_404(Product.objects.order_by('id'), seller_id=body['user_id'])
         products_response = []
 
         for product in products:
@@ -66,13 +65,9 @@ def retrieve_and_create_product(request):
             'products': products_response
         })
     elif (request.method == 'POST'):
-        if ('user_id' not in request.COOKIES):
-            return HttpResponse(status=404)
-
-        seller = get_object_or_404(Seller, id=request.COOKIES['user_id'])
-
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
+        seller = get_object_or_404(Seller, id=body['user_id'])
         product = Product(
             name=body['name'],
             category=body['category'],
