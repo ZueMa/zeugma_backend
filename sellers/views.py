@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
 from .models import Seller
 from products.models import Product
+from sellers.models import Order
 
 import json
 
@@ -109,3 +110,27 @@ def update_and_delete_product(request, seller_id, product_id):
         return HttpResponse(status=204)
     else:
         return HttpResponse(status=501)
+
+@csrf_exempt
+def retrieve_order_history(request, seller_id):
+    if (request.method != 'GET'):
+        return HttpResponse(status=501)
+
+    orders_list = get_list_or_404(Order.objects.all().order_by('id'))
+    orders_response = []
+
+    for order in orders_list:
+        orders_response.append({
+            'order_id': order.product.id,
+            'product_id': order.product.id,
+            'name': order.product.name,
+            'short_description': order.product.short_description,
+            'image': 'http://localhost:8000/images/{}'.format(order.product.image),
+            'num_items': order.num_items,
+            'revenue': order.revenue,
+            'timestamp': order.timestamp
+        })
+
+    return JsonResponse({
+        'orders': orders_response
+    })
