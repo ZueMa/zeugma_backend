@@ -164,6 +164,8 @@ def purchase_cart(request, buyer_id):
         product_carts = []
 
     for item, product_cart in zip(items, product_carts):
+        item.num_stocks = F('num_stocks') - product_cart.num_items
+        item.save(update_fields=['num_stocks'])
         Order(
             product=item,
             seller=item.seller,
