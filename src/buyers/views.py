@@ -91,9 +91,7 @@ def add_item_to_cart(request, buyer_id):
     try:
         product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
 
-        return JsonResponse({
-            'alert': 'Product is already in cart!'
-        }, status=304)
+        return HttpResponse(status=304)
     except:
         ProductCart(
             cart=cart,
