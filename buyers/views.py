@@ -28,10 +28,10 @@ def register_buyer(request):
 def retrieve_current_buyer(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
-    if ('user_id' not in request.COOKIES):
-        return HttpResponse(status=404)
-
-    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    buyer = get_object_or_404(Buyer, id=body['user_id'])
 
     return JsonResponse({
         'buyer_id': buyer.id,
@@ -44,10 +44,10 @@ def retrieve_current_buyer(request):
 def retrieve_cart(request):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
-    if ('user_id' not in request.COOKIES):
-        return HttpResponse(status=404)
-
-    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    buyer = get_object_or_404(Buyer, id=body['user_id'])
     try:
         cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
     except:
@@ -86,18 +86,16 @@ def retrieve_cart(request):
 def add_item_to_cart(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
-    if ('user_id' not in request.COOKIES):
-        return HttpResponse(status=404)
-
-    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    buyer = get_object_or_404(Buyer, id=body['user_id'])
     try:
         cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
     except:
         cart = Cart(buyer=buyer)
         cart.save()
 
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
     product = get_object_or_404(Product, id=body['product_id'])
     try:
         product_cart = ProductCart.objects.get(cart_id=cart.id, product_id=product.id)
@@ -116,10 +114,9 @@ def add_item_to_cart(request):
 @csrf_exempt
 def update_and_delete_item(request, item_id):
     if (request.method == 'POST'):
-        if ('user_id' not in request.COOKIES):
-            return HttpResponse(status=404)
-
-        buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        buyer = get_object_or_404(Buyer, id=body['user_id'])
         try:
             cart = Cart.objects.get(is_purchased=False, buyer_id=buyer.id)
         except:
@@ -128,8 +125,6 @@ def update_and_delete_item(request, item_id):
         product = get_object_or_404(Product, id=item_id)
         product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
 
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
         if (body['action'] == 'increase'):
             if (product_cart.num_items == product.num_stocks):
                 return JsonResponse({
@@ -146,10 +141,9 @@ def update_and_delete_item(request, item_id):
 
         return HttpResponse(status=204)
     elif (request.method == 'DELETE'):
-        if ('user_id' not in request.COOKIES):
-            return HttpResponse(status=404)
-
-        buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        buyer = get_object_or_404(Buyer, id=body['user_id'])
         cart = get_object_or_404(Cart, buyer_id=buyer.id)
         product = get_object_or_404(Product, id=item_id)
 
@@ -166,10 +160,10 @@ def update_and_delete_item(request, item_id):
 def purchase_cart(request):
     if (request.method != 'POST'):
         return HttpResponse(status=501)
-    if ('user_id' not in request.COOKIES):
-        return HttpResponse(status=404)
-
-    buyer = get_object_or_404(Buyer, id=request.COOKIES['user_id'])
+    
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    buyer = get_object_or_404(Buyer, id=body['user_id'])
     cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
     items = cart.items.all().order_by('id')
     try:
