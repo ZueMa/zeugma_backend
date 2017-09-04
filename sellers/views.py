@@ -111,7 +111,6 @@ def update_and_delete_product(request, seller_id, product_id):
     else:
         return HttpResponse(status=501)
 
-@csrf_exempt
 def retrieve_order_history(request, seller_id):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
