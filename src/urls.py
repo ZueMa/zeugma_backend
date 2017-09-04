@@ -20,8 +20,8 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^buyers/', include('buyers.urls')),
-    url(r'^sellers/', include('sellers.urls')),
-    url(r'^authentication/', include('authentication.urls')),
-    url(r'^products/', include('products.urls'))
+    url(r'^buyers/', include('src.buyers.urls')),
+    url(r'^sellers/', include('src.sellers.urls')),
+    url(r'^authentication/', include('src.authentication.urls')),
+    url(r'^products/', include('src.products.urls'))
 ]
