@@ -224,7 +224,7 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
     purchase = get_object_or_404(Purchase, id=purchase_id)
     items = purchase.cart.items.all().order_by('id')
     try:
-        product_carts = ProductCart.objects.filter(cart_id=purchased.cart.id)
+        product_carts = ProductCart.objects.filter(cart_id=purchase.cart.id)
     except:
         product_carts = []
     items_response = []
