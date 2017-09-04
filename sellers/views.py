@@ -120,7 +120,7 @@ def retrieve_order_history(request, seller_id):
 
     for order in orders_list:
         orders_response.append({
-            'order_id': order.product.id,
+            'order_id': order.id,
             'product_id': order.product.id,
             'name': order.product.name,
             'short_description': order.product.short_description,
