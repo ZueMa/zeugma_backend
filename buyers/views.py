@@ -219,15 +219,13 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
 
-    buyer = get_object_or_404(Buyer, id=buyer_id)
-    purchased = get_object_or_404(Purchase, id=purchase_id)
-    items = purchased.cart.items.all().order_by('id')
-    items_response = []
-
+    purchase = get_object_or_404(Purchase, id=purchase_id)
+    items = purchase.cart.items.all().order_by('id')
     try:
         product_carts = ProductCart.objects.filter(cart_id=purchased.cart.id)
     except:
         product_carts = []
+    items_response = []
 
     for item, product_cart in zip(items, product_carts):
         items_response.append({
@@ -240,7 +238,7 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
         })
 
     return JsonResponse({
-        "purchase_id": purchased.id,
-        "cart_id": purchased.cart.id,
+        "purchase_id": purchase.id,
+        "cart_id": purchase.cart.id,
         "items": items_response
     })
