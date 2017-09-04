@@ -25,13 +25,11 @@ def register_seller(request):
 
     return HttpResponse(status=204)
 
-def retrieve_current_seller(request):
+def retrieve_current_seller(request, seller_id):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
 
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
-    seller = get_object_or_404(Seller, id=body['user_id'])
+    seller = get_object_or_404(Seller, id=seller_id)
 
     return JsonResponse({
         'seller_id': seller.id,
@@ -44,11 +42,9 @@ def retrieve_current_seller(request):
     })
 
 @csrf_exempt
-def retrieve_and_create_product(request):
+def retrieve_and_create_product(request, seller_id):
     if (request.method == 'GET'):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        products = get_list_or_404(Product.objects.order_by('id'), seller_id=body['user_id'])
+        products = get_list_or_404(Product.objects.order_by('id'), seller_id=seller_id)
         products_response = []
 
         for product in products:
@@ -65,9 +61,10 @@ def retrieve_and_create_product(request):
             'products': products_response
         })
     elif (request.method == 'POST'):
+        seller = get_object_or_404(Seller, id=seller_id)
+
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-        seller = get_object_or_404(Seller, id=body['user_id'])
         product = Product(
             name=body['name'],
             category=body['category'],
@@ -87,7 +84,7 @@ def retrieve_and_create_product(request):
         return HttpResponse(status=501)
 
 @csrf_exempt
-def update_and_delete_product(request, product_id):
+def update_and_delete_product(request, seller_id, product_id):
     if (request.method == 'PUT'):
         product = get_object_or_404(Product, id=product_id)
         body_unicode = request.body.decode('utf-8')
