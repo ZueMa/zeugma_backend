@@ -209,7 +209,7 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
 
     purchase = get_object_or_404(Purchase, id=purchase_id)
     items_list = purchase.cart.items.all().order_by('id')
-    product_carts_list = get_list_or_404(ProductCart, cart_id=cart.id)
+    product_carts_list = get_list_or_404(ProductCart, cart_id=purchase.cart.id)
     items_response = []
 
     for item, product_cart in zip(items_list, product_carts_list):
