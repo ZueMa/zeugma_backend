@@ -9,11 +9,10 @@ import json
 @csrf_exempt
 def authenticate(request):
     if (request.method == 'POST'):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        username = body['username']
-        password = body['password']
-        user_type = body['user_type']
+        request_body = json.loads(request.body.decode('utf-8'))
+        username = request_body['username']
+        password = request_body['password']
+        user_type = request_body['user_type']
 
         try:
             if (user_type == 'buyer'):
@@ -35,4 +34,4 @@ def authenticate(request):
     elif (request.method == 'DELETE'):
         return HttpResponse(status=204)
     else:
-        return HttpResponse(status=501)
+        return HttpResponse(status=405)
