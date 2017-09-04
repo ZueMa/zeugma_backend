@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from buyers.models import Buyer
@@ -11,7 +11,6 @@ def authenticate(request):
     if (request.method == 'POST'):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-
         username = body['username']
         password = body['password']
         user_type = body['user_type']
@@ -25,22 +24,15 @@ def authenticate(request):
                 return HttpResponse(status=400)
 
             if (user.password == password):
-                response = HttpResponse(status=204)
-                response.set_cookie('user_id', user.id)
-                response.set_cookie('username', user.username)
-                response.set_cookie('user_type', user_type)
-
-                return response
+                return JsonResponse({
+                    'user_id': user.id,
+                    'user_type': user_type
+                }, status=201)
             else:
                 return HttpResponse(status=500)
         except:
             return HttpResponse(status=500)
     elif (request.method == 'DELETE'):
-        response = HttpResponse(status=204)
-        response.set_cookie('user_id', '0')
-        response.set_cookie('username', 'guest')
-        response.set_cookie('user_type', 'guest')
-
-        return response
+        return HttpResponse(status=204)
     else:
         return HttpResponse(status=501)
