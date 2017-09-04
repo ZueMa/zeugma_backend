@@ -116,12 +116,11 @@ def retrieve_order_history(request, seller_id):
     if (request.method != 'GET'):
         return HttpResponse(status=501)
 
-    order_list = get_list_or_404(Order)
-    order_response = []
+    orders_list = get_list_or_404(Order.objects.all().order_by('id'))
+    orders_response = []
 
-    for order in order_list:
-        
-        order_response.append({
+    for order in orders_list:
+        orders_response.append({
             'order_id': order.product.id,
             'product_id': order.product.id,
             'name': order.product.name,
@@ -130,11 +129,8 @@ def retrieve_order_history(request, seller_id):
             'num_items': order.num_items,
             'revenue': order.revenue,
             'timestamp': order.timestamp
-    })
+        })
 
     return JsonResponse({
-        'orders': order_response
+        'orders': orders_response
     })
-                
-
-
