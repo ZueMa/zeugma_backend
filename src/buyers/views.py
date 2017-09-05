@@ -50,7 +50,6 @@ def retrieve_cart(request, buyer_id):
         cart.save()
     items_list = cart.items.all().order_by('id')
     product_carts_list = get_list_or_404(ProductCart, cart_id=cart.id)
-    total_items = 0
     total_price = 0.0
     items_response = []
 
@@ -64,12 +63,10 @@ def retrieve_cart(request, buyer_id):
             'image': 'http://localhost:8000/images/{}'.format(item.image),
             'num_items': product_cart.num_items
         })
-        total_items += product_cart.num_items
         total_price += item.price * product_cart.num_items
 
     return JsonResponse({
         'cart_id': cart.id,
-        'total_items': total_items,
         'total_price': total_price,
         'items': items_response
     })
@@ -205,6 +202,7 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
     purchase = get_object_or_404(Purchase, id=purchase_id)
     items_list = purchase.cart.items.all().order_by('id')
     product_carts_list = get_list_or_404(ProductCart, cart_id=purchase.cart.id)
+    total_price = 0.0
     items_response = []
 
     for item, product_cart in zip(items_list, product_carts_list):
@@ -216,9 +214,11 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
             'image': 'http://localhost:8000/images/{}'.format(item.image),
             'num_items': product_cart.num_items
         })
+        total_price += item.price * product_cart.num_items
 
     return JsonResponse({
         "purchase_id": purchase.id,
         "cart_id": purchase.cart.id,
+        "total_price": total_price,
         "items": items_response
     })

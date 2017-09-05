@@ -87,7 +87,6 @@ Buyer can request to view his/her shopping cart
             
             {
                 "cart_id": 1,
-                "total_items": 5,
                 "total_price": 40499.95,
                 "items": [
                     {
@@ -222,6 +221,7 @@ Buyer can request a specific purchased cart
             {
                 "purchase_id": 1,
                 "cart_id": 1,
+                "total_price": 40499.95,
                 "items": [
                     {
                         "product_id": 1,
