@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import TransactionTestCase, Client
 from django.shortcuts import get_object_or_404
 from .models import Buyer, Cart, ProductCart, Purchase
 from src.products.models import Product
@@ -6,14 +6,13 @@ from src.sellers.models import Seller
 
 import json
 
-class BuyersTestCase(TestCase):
+class BuyersTestCase(TransactionTestCase):
+    reset_sequences = True
 
     @classmethod
     def setUp(self):
         self.client = Client()
-
-    @classmethod
-    def setUpTestData(self):
+        
         self.buyer = Buyer(
             username='jimmyXavier',
             password='12345678',
@@ -304,6 +303,37 @@ class BuyersTestCase(TestCase):
         second_response = self.client.put('/buyers/1/purchases/')
         third_response = self.client.patch('/buyers/1/purchases/')
         fourth_response = self.client.delete('/buyers/1/purchases/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
+        self.assertEqual(fourth_response.status_code, 405)
+
+    def test_buyer_should_retrieve_their_purchased_cart(self):
+        ProductCart(
+            cart=self.cart,
+            product=self.product
+        ).save()
+        purchase = Purchase(
+            cart=self.cart,
+            buyer=self.buyer
+        )
+        purchase.save()
+        self.cart.is_purchased = True
+        self.cart.save(update_fields=['is_purchased'])
+        response = self.client.get('/buyers/1/purchases/1/')
+
+        self.assertEqual(response.json()['purchase_id'], 1)
+        self.assertEqual(response.json()['cart_id'], 1)
+        self.assertEqual(response.json()['total_price'], 1749.99)
+        self.assertIsNotNone(response.json()['items'])
+        self.assertEqual(response.status_code, 200)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_purchased_cart(self):
+        first_response = self.client.post('/buyers/1/purchases/1/')
+        second_response = self.client.put('/buyers/1/purchases/1/')
+        third_response = self.client.patch('/buyers/1/purchases/1/')
+        fourth_response = self.client.delete('/buyers/1/purchases/1/')
 
         self.assertEqual(first_response.status_code, 405)
         self.assertEqual(second_response.status_code, 405)
