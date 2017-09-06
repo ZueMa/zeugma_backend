@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.shortcuts import get_object_or_404
-from .models import Buyer, Cart, ProductCart
+from .models import Buyer, Cart, ProductCart, Purchase
 from src.products.models import Product
 from src.sellers.models import Seller
 
@@ -275,6 +275,35 @@ class BuyersTestCase(TestCase):
         second_response = self.client.put('/buyers/1/cart/purchase/')
         third_response = self.client.patch('/buyers/1/cart/purchase/')
         fourth_response = self.client.delete('/buyers/1/cart/purchase/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
+        self.assertEqual(fourth_response.status_code, 405)
+
+    def test_buyer_should_retrieve_their_purchase_history(self):
+        for x in range(0, 3):
+            ProductCart(
+                cart=self.cart,
+                product=self.product
+            ).save()
+            purchase = Purchase(
+                cart=self.cart,
+                buyer=self.buyer
+            )
+            purchase.save()
+            self.cart.is_purchased = True
+            self.cart.save(update_fields=['is_purchased'])
+        response = self.client.get('/buyers/1/purchases/')
+
+        self.assertIsNotNone(response.json()['purchases'])
+        self.assertEqual(response.status_code, 200)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_purchase_history(self):
+        first_response = self.client.post('/buyers/1/purchases/')
+        second_response = self.client.put('/buyers/1/purchases/')
+        third_response = self.client.patch('/buyers/1/purchases/')
+        fourth_response = self.client.delete('/buyers/1/purchases/')
 
         self.assertEqual(first_response.status_code, 405)
         self.assertEqual(second_response.status_code, 405)
