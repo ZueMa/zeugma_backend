@@ -49,7 +49,10 @@ def retrieve_cart(request, buyer_id):
         cart = Cart(buyer=buyer)
         cart.save()
     items_list = cart.items.all().order_by('id')
-    product_carts_list = get_list_or_404(ProductCart, cart_id=cart.id)
+    try:
+        product_carts_list = ProductCart.objects.filter(cart_id=cart.id)
+    except:
+        product_carts_list = []
     total_price = 0.0
     items_response = []
 
