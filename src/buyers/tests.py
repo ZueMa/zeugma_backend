@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from django.shortcuts import get_object_or_404
 from .models import Buyer, Cart, ProductCart
 from src.products.models import Product
 
@@ -28,7 +29,7 @@ class BuyersTestCase(TestCase):
             name='Cerebro',
             category='Cosmetics',
             price=1749.99,
-            num_stocks=30,
+            num_stocks=3,
             short_description='Read minds across the globe!',
             full_description='Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.',
             image='cerebro.jpg'
@@ -115,7 +116,7 @@ class BuyersTestCase(TestCase):
         response = self.client.post(
             '/buyers/1/cart/items/',
             json.dumps({
-                'product_id': self.product.id
+                'product_id': 1
             }),
             content_type='application/json'
         )
@@ -130,7 +131,7 @@ class BuyersTestCase(TestCase):
         response = self.client.post(
             '/buyers/1/cart/items/',
             json.dumps({
-                'product_id': self.product.id
+                'product_id': 1
             }),
             content_type='application/json'
         )
@@ -147,3 +148,77 @@ class BuyersTestCase(TestCase):
         self.assertEqual(second_response.status_code, 405)
         self.assertEqual(third_response.status_code, 405)
         self.assertEqual(fourth_response.status_code, 405)
+
+    def test_buyer_should_increase_item_quantity_in_cart(self):
+        ProductCart(
+            cart=self.cart,
+            product=self.product
+        ).save()
+        response = self.client.post(
+            '/buyers/1/cart/items/1/',
+            json.dumps({
+                'action': 'increase'
+            }),
+            content_type='application/json'
+        )
+        product_cart = get_object_or_404(ProductCart, cart_id=self.cart.id, product_id=self.product.id)
+
+        self.assertEqual(product_cart.num_items, 2)
+        self.assertEqual(response.status_code, 204)
+
+    def test_server_should_return_304_if_num_items_will_exceed_num_stocks(self):
+        product_cart = ProductCart(
+            cart=self.cart,
+            product=self.product
+        )
+        product_cart.num_items = 3
+        product_cart.save()
+        response = self.client.post(
+            '/buyers/1/cart/items/1/',
+            json.dumps({
+                'action': 'increase'
+            }),
+            content_type='application/json'
+        )
+        product_cart = get_object_or_404(ProductCart, cart_id=self.cart.id, product_id=self.product.id)
+
+        self.assertEqual(product_cart.num_items, 3)
+        self.assertEqual(response.status_code, 304)
+
+    def test_buyer_should_decrease_item_quantity_in_cart(self):
+        product_cart = ProductCart(
+            cart=self.cart,
+            product=self.product
+        )
+        product_cart.num_items = 3
+        product_cart.save()
+        response = self.client.post(
+            '/buyers/1/cart/items/1/',
+            json.dumps({
+                'action': 'decrease'
+            }),
+            content_type='application/json'
+        )
+        product_cart = get_object_or_404(ProductCart, cart_id=self.cart.id, product_id=self.product.id)
+
+        self.assertEqual(product_cart.num_items, 2)
+        self.assertEqual(response.status_code, 204)
+
+    def test_server_should_return_304_if_num_items_will_be_zero(self):
+        product_cart = ProductCart(
+            cart=self.cart,
+            product=self.product
+        )
+        product_cart.num_items = 1
+        product_cart.save()
+        response = self.client.post(
+            '/buyers/1/cart/items/1/',
+            json.dumps({
+                'action': 'decrease'
+            }),
+            content_type='application/json'
+        )
+        product_cart = get_object_or_404(ProductCart, cart_id=self.cart.id, product_id=self.product.id)
+
+        self.assertEqual(product_cart.num_items, 1)
+        self.assertEqual(response.status_code, 304)
