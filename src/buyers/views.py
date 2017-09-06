@@ -143,7 +143,9 @@ def purchase_cart(request, buyer_id):
     buyer = get_object_or_404(Buyer, id=buyer_id)
     cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
     items_list = cart.items.all().order_by('id')
-    product_carts_list = get_list_or_404(ProductCart, cart_id=cart.id)
+    product_carts_list = ProductCart.objects.filter(cart_id=cart.id)
+    if (len(product_carts_list) == 0):
+        return HttpResponse(status=304)
 
     for item, product_cart in zip(items_list, product_carts_list):
         item.num_stocks = F('num_stocks') - product_cart.num_items
