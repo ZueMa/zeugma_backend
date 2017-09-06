@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -71,7 +72,7 @@ def retrieve_and_create_product(request, seller_id):
             num_stocks=request_body['num_stocks'],
             short_description=request_body['short_description'],
             full_description=request_body['full_description'],
-            image='http://localhost:8000/images/{}'.format(request_body['image']),
+            image='{}{}'.format(settings.MEDIA_URL, request_body['image']),
             seller=seller
         )
         product.save()
@@ -94,7 +95,7 @@ def update_and_delete_product(request, seller_id, product_id):
         product.num_stocks = request_body['num_stocks']
         product.short_description = request_body['short_description']
         product.full_description = request_body['full_description']
-        product.image = 'http://localhost:8000/images/{}'.format(request_body['image'])
+        product.image = '{}{}'.format(settings.MEDIA_URL, request_body['image'])
         product.save()
 
         return HttpResponse(status=204)

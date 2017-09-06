@@ -92,3 +92,5 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = 'http://localhost:8000/images/'
