@@ -222,3 +222,22 @@ class BuyersTestCase(TestCase):
 
         self.assertEqual(product_cart.num_items, 1)
         self.assertEqual(response.status_code, 304)
+
+    def test_buyer_should_delete_item_from_cart(self):
+        ProductCart(
+            cart=self.cart,
+            product=self.product
+        ).save()
+        response = self.client.delete('/buyers/1/cart/items/1/')
+
+        self.assertFalse(ProductCart.objects.filter(cart_id=self.cart.id, product_id=self.product.id).exists())
+        self.assertEqual(response.status_code, 204)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_updating_and_deleting_item_in_cart(self):
+        first_response = self.client.get('/buyers/1/cart/items/1/')
+        second_response = self.client.put('/buyers/1/cart/items/1/')
+        third_response = self.client.patch('/buyers/1/cart/items/1/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
