@@ -54,7 +54,7 @@ def retrieve_and_create_product(request, seller_id):
                 'category': product.category,
                 'price': product.price,
                 'short_description': product.short_description,
-                'image': 'http://localhost:8000/images/{}'.format(product.image)
+                'image': product.image
             })
 
         return JsonResponse({
@@ -71,7 +71,7 @@ def retrieve_and_create_product(request, seller_id):
             num_stocks=request_body['num_stocks'],
             short_description=request_body['short_description'],
             full_description=request_body['full_description'],
-            image=request_body['image'],
+            image='http://localhost:8000/images/{}'.format(request_body['image']),
             seller=seller
         )
         product.save()
@@ -94,7 +94,7 @@ def update_and_delete_product(request, seller_id, product_id):
         product.num_stocks = request_body['num_stocks']
         product.short_description = request_body['short_description']
         product.full_description = request_body['full_description']
-        product.image = request_body['image']
+        product.image = 'http://localhost:8000/images/{}'.format(request_body['image'])
         product.save()
 
         return HttpResponse(status=204)
@@ -121,7 +121,7 @@ def retrieve_order_history(request, seller_id):
             'product_id': order.product.id,
             'name': order.product.name,
             'short_description': order.product.short_description,
-            'image': 'http://localhost:8000/images/{}'.format(order.product.image),
+            'image': order.product.image,
             'num_items': order.num_items,
             'revenue': order.revenue,
             'timestamp': order.timestamp

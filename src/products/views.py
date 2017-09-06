@@ -18,7 +18,7 @@ def retrieve_all_products(request):
             'category': product.category,
             'price': product.price,
             'short_description': product.short_description,
-            'image': 'http://localhost:8000/images/{}'.format(product.image)
+            'image': product.image
         })
 
     return JsonResponse({
@@ -39,5 +39,5 @@ def retrieve_product_information(request, product_id):
         'num_stocks': product.num_stocks,
         'short_description': product.short_description,
         'full_description': product.full_description,
-        'image': 'http://localhost:8000/images/{}'.format(product.image)
+        'image': product.image
     })
