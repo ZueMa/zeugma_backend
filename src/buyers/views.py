@@ -114,9 +114,7 @@ def update_and_delete_item(request, buyer_id, item_id):
 
         if (json.loads(request.body.decode('utf-8'))['action'] == 'increase'):
             if (product_cart.num_items == product.num_stocks):
-                return JsonResponse({
-                    'alert': 'Cannot exceed product\'s stocks!'
-                }, status=400)
+                return HttpResponse(status=304)
             product_cart.num_items = F('num_items') + 1
         else:
             if (product_cart.num_items == 1):
