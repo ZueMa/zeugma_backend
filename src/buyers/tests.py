@@ -1,6 +1,7 @@
 from django.test import TransactionTestCase, Client
 from django.shortcuts import get_object_or_404
 from .models import Buyer, Cart, ProductCart, Purchase
+from datetime import date
 from src.products.models import Product
 from src.sellers.models import Seller
 
@@ -43,7 +44,7 @@ class BuyersTestCase(TransactionTestCase):
             num_stocks=3,
             short_description='Read minds across the globe!',
             full_description='Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.',
-            image='cerebro.jpg',
+            image='http://localhost:8000/images/cerebro.jpg',
             seller=self.seller
         )
         self.product.save()
@@ -96,6 +97,26 @@ class BuyersTestCase(TransactionTestCase):
         self.assertEqual(fourth_response.status_code, 405)
 
     def text_buyer_should_retrieve_their_cart(self):
+        ProductCart(
+            cart=self.cart,
+            product=self.product
+        ).save()
+        response = self.client.get('/buyers/1/cart/')
+
+        self.assertEqual(response.json()['cart_id'], 1)
+        self.assertEqual(response.json()['total_price'], 0)
+        self.assertIsNotNone(response.json()['items'])
+        self.assertEqual(len(response.json()['items']), 1)
+        self.assertEqual(response.json()['items'][0]['product_id'], 1)
+        self.assertEqual(response.json()['items'][0]['name'], 'Cerebro')
+        self.assertEqual(response.json()['items'][0]['price'], 1749.99)
+        self.assertEqual(response.json()['items'][0]['num_stocks'], 3)
+        self.assertEqual(response.json()['items'][0]['short_description'], 'Read minds across the globe!')
+        self.assertEqual(response.json()['items'][0]['image'], 'http://localhost:8000/images/cerebro.jpg')
+        self.assertEqual(response.json()['items'][0]['num_items'], 1)
+        self.assertEqual(response.status_code, 200)
+
+    def text_buyer_should_retrieve_their_empty_cart(self):
         response = self.client.get('/buyers/1/cart/')
 
         self.assertEqual(response.json()['cart_id'], 1)
@@ -281,21 +302,46 @@ class BuyersTestCase(TransactionTestCase):
         self.assertEqual(fourth_response.status_code, 405)
 
     def test_buyer_should_retrieve_their_purchase_history(self):
-        for x in range(0, 3):
-            ProductCart(
-                cart=self.cart,
-                product=self.product
-            ).save()
-            purchase = Purchase(
-                cart=self.cart,
-                buyer=self.buyer
-            )
-            purchase.save()
-            self.cart.is_purchased = True
-            self.cart.save(update_fields=['is_purchased'])
+        ProductCart(
+            cart=self.cart,
+            product=self.product
+        ).save()
+        Purchase(
+            cart=self.cart,
+            buyer=self.buyer
+        ).save()
+        Purchase(
+            cart=self.cart,
+            buyer=self.buyer
+        ).save()
+        Purchase(
+            cart=self.cart,
+            buyer=self.buyer
+        ).save()
+        self.cart.is_purchased = True
+        self.cart.save(update_fields=['is_purchased'])
         response = self.client.get('/buyers/1/purchases/')
 
         self.assertIsNotNone(response.json()['purchases'])
+        self.assertEqual(len(response.json()['purchases']), 3)
+        self.assertEqual(response.json()['purchases'][0]['purchase_id'], 3)
+        self.assertEqual(response.json()['purchases'][0]['cart_id'], 1)
+        self.assertEqual(response.json()['purchases'][0]['total_items'], 1)
+        self.assertEqual(response.json()['purchases'][0]['total_price'], 1749.99)
+        self.assertEqual(response.json()['purchases'][0]['is_shipped'], True)
+        self.assertEqual(response.json()['purchases'][0]['timestamp'], str(date.today()))
+        self.assertEqual(response.json()['purchases'][1]['purchase_id'], 2)
+        self.assertEqual(response.json()['purchases'][1]['cart_id'], 1)
+        self.assertEqual(response.json()['purchases'][1]['total_items'], 1)
+        self.assertEqual(response.json()['purchases'][1]['total_price'], 1749.99)
+        self.assertEqual(response.json()['purchases'][1]['is_shipped'], True)
+        self.assertEqual(response.json()['purchases'][1]['timestamp'], str(date.today()))
+        self.assertEqual(response.json()['purchases'][2]['purchase_id'], 1)
+        self.assertEqual(response.json()['purchases'][2]['cart_id'], 1)
+        self.assertEqual(response.json()['purchases'][2]['total_items'], 1)
+        self.assertEqual(response.json()['purchases'][2]['total_price'], 1749.99)
+        self.assertEqual(response.json()['purchases'][2]['is_shipped'], True)
+        self.assertEqual(response.json()['purchases'][2]['timestamp'], str(date.today()))
         self.assertEqual(response.status_code, 200)
 
     def test_server_should_return_405_with_wrong_HTTP_methods_for_purchase_history(self):
@@ -327,6 +373,13 @@ class BuyersTestCase(TransactionTestCase):
         self.assertEqual(response.json()['cart_id'], 1)
         self.assertEqual(response.json()['total_price'], 1749.99)
         self.assertIsNotNone(response.json()['items'])
+        self.assertEqual(len(response.json()['items']), 1)
+        self.assertEqual(response.json()['items'][0]['product_id'], 1)
+        self.assertEqual(response.json()['items'][0]['name'], 'Cerebro')
+        self.assertEqual(response.json()['items'][0]['price'], 1749.99)
+        self.assertEqual(response.json()['items'][0]['short_description'], 'Read minds across the globe!')
+        self.assertEqual(response.json()['items'][0]['image'], 'http://localhost:8000/images/cerebro.jpg')
+        self.assertEqual(response.json()['items'][0]['num_items'], 1)
         self.assertEqual(response.status_code, 200)
 
     def test_server_should_return_405_with_wrong_HTTP_methods_for_purchased_cart(self):
