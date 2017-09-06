@@ -60,7 +60,7 @@ def retrieve_cart(request, buyer_id):
             'price': item.price,
             'num_stocks': item.num_stocks,
             'short_description': item.short_description,
-            'image': 'http://localhost:8000/images/{}'.format(item.image),
+            'image': item.image,
             'num_items': product_cart.num_items
         })
         total_price += item.price * product_cart.num_items
@@ -211,7 +211,7 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
             'name': item.name,
             'price': item.price,
             'short_description': item.short_description,
-            'image': 'http://localhost:8000/images/{}'.format(item.image),
+            'image': item.image,
             'num_items': product_cart.num_items
         })
         total_price += item.price * product_cart.num_items
