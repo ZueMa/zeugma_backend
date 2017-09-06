@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.shortcuts import get_object_or_404
 from .models import Buyer, Cart, ProductCart
 from src.products.models import Product
+from src.sellers.models import Seller
 
 import json
 
@@ -25,6 +26,17 @@ class BuyersTestCase(TestCase):
         self.cart = Cart(buyer=self.buyer)
         self.cart.save()
 
+        self.seller = Seller(
+            username='fat_bender52',
+            password='12345678',
+            first_name='Michael',
+            last_name='Fassbender',
+            company_name='The Brotherhood',
+            address='900 Exposition Boulevard, Los Angeles',
+            description='The Brotherhood was founded by Magneto and its members were his primary allies in his early battles with the X-Men during the 1960s. The original Brotherhood ultimately disbanded, with Quicksilver and Scarlet Witch going on to become members of the Avengers.'
+        )
+        self.seller.save()
+
         self.product = Product(
             name='Cerebro',
             category='Cosmetics',
@@ -32,7 +44,8 @@ class BuyersTestCase(TestCase):
             num_stocks=3,
             short_description='Read minds across the globe!',
             full_description='Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.',
-            image='cerebro.jpg'
+            image='cerebro.jpg',
+            seller=self.seller
         )
         self.product.save()
 
@@ -241,3 +254,29 @@ class BuyersTestCase(TestCase):
         self.assertEqual(first_response.status_code, 405)
         self.assertEqual(second_response.status_code, 405)
         self.assertEqual(third_response.status_code, 405)
+
+    def test_buyer_should_purchase_their_cart(self):
+        ProductCart(
+            cart=self.cart,
+            product=self.product
+        ).save()
+        response = self.client.post('/buyers/1/cart/purchase/')
+
+        self.assertEqual(response.json()['purchase_id'], 1)
+        self.assertEqual(response.status_code, 201)
+
+    def test_buyer_should_fail_to_purchase_empty_cart(self):
+        response = self.client.post('/buyers/1/cart/purchase/')
+
+        self.assertEqual(response.status_code, 304)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_purchasing_cart(self):
+        first_response = self.client.get('/buyers/1/cart/purchase/')
+        second_response = self.client.put('/buyers/1/cart/purchase/')
+        third_response = self.client.patch('/buyers/1/cart/purchase/')
+        fourth_response = self.client.delete('/buyers/1/cart/purchase/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
+        self.assertEqual(fourth_response.status_code, 405)
