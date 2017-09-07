@@ -187,3 +187,27 @@ class SellersTestCase(TransactionTestCase):
         )
 
         self.assertEqual(response.status_code, 204)
+
+    def test_seller_should_delete_product(self):
+        product = Product(
+            name='Web Shooters',
+            category='Kids',
+            price=299.99,
+            num_stocks=220,
+            short_description='Shoot webs everywhere to satisfy your childish dreams!',
+            full_description='Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.',
+            image='web_shooters.jpg'
+        )
+        product.save()
+        response = self.client.delete('/sellers/1/products/4/')
+
+        self.assertEqual(response.status_code, 204)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_updating_and_deleting_products(self):
+        first_response = self.client.get('/sellers/1/products/4/')
+        second_response = self.client.post('/sellers/1/products/4/')
+        third_response = self.client.patch('/sellers/1/products/4/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
