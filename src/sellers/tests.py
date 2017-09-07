@@ -1,5 +1,6 @@
 from django.test import TransactionTestCase, Client
-from .models import Seller
+from datetime import date
+from .models import Seller, Order
 from src.products.models import Product
 
 import json
@@ -211,3 +212,63 @@ class SellersTestCase(TransactionTestCase):
         self.assertEqual(first_response.status_code, 405)
         self.assertEqual(second_response.status_code, 405)
         self.assertEqual(third_response.status_code, 405)
+
+    def test_seller_should_retrieve_their_order_history(self):
+        Order(
+            product=self.product_1,
+            seller=self.seller,
+            num_items=1,
+            revenue=self.product_1.price
+        ).save()
+        Order(
+            product=self.product_2,
+            seller=self.seller,
+            num_items=2,
+            revenue=self.product_2.price * 2
+        ).save()
+        Order(
+            product=self.product_3,
+            seller=self.seller,
+            num_items=3,
+            revenue=self.product_3.price * 3
+        ).save()
+        response = self.client.get('/sellers/1/orders/')
+
+        self.assertIsNotNone(response.json()['orders'])
+        self.assertEqual(len(response.json()['orders']), 3)
+        self.assertEqual(response.json()['orders'][0]['order_id'], 3)
+        self.assertEqual(response.json()['orders'][0]['product_id'], 3)
+        self.assertEqual(response.json()['orders'][0]['name'], 'Mjolnir')
+        self.assertEqual(response.json()['orders'][0]['short_description'], 'Weight-lifting like never before!')
+        self.assertEqual(response.json()['orders'][0]['image'], 'http://localhost:8000/images/mjolnir.jpg')
+        self.assertEqual(response.json()['orders'][0]['num_items'], 3)
+        self.assertEqual(response.json()['orders'][0]['revenue'], 7499.97)
+        self.assertEqual(response.json()['orders'][0]['timestamp'], str(date.today()))
+        self.assertEqual(response.json()['orders'][1]['order_id'], 2)
+        self.assertEqual(response.json()['orders'][1]['product_id'], 2)
+        self.assertEqual(response.json()['orders'][1]['name'], 'Invisibility Cloak')
+        self.assertEqual(response.json()['orders'][1]['short_description'], 'Hide from anything, even death!')
+        self.assertEqual(response.json()['orders'][1]['image'], 'http://localhost:8000/images/invisibility_cloak.jpg')
+        self.assertEqual(response.json()['orders'][1]['num_items'], 2)
+        self.assertEqual(response.json()['orders'][1]['revenue'], 1599.98)
+        self.assertEqual(response.json()['orders'][1]['timestamp'], str(date.today()))
+        self.assertEqual(response.json()['orders'][2]['order_id'], 1)
+        self.assertEqual(response.json()['orders'][2]['product_id'], 1)
+        self.assertEqual(response.json()['orders'][2]['name'], 'Cerebro')
+        self.assertEqual(response.json()['orders'][2]['short_description'], 'Read minds across the globe!')
+        self.assertEqual(response.json()['orders'][2]['image'], 'http://localhost:8000/images/cerebro.jpg')
+        self.assertEqual(response.json()['orders'][2]['num_items'], 1)
+        self.assertEqual(response.json()['orders'][2]['revenue'], 1749.99)
+        self.assertEqual(response.json()['orders'][2]['timestamp'], str(date.today()))
+        self.assertEqual(response.status_code, 200)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_order_history(self):
+        first_response = self.client.post('/sellers/1/orders/')
+        second_response = self.client.put('/sellers/1/orders/')
+        third_response = self.client.patch('/sellers/1/orders/')
+        fourth_response = self.client.delete('/sellers/1/orders/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
+        self.assertEqual(fourth_response.status_code, 405)
