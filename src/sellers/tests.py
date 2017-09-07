@@ -133,3 +133,57 @@ class SellersTestCase(TransactionTestCase):
         self.assertEqual(response.json()['products'][2]['short_description'], 'Weight-lifting like never before!')
         self.assertEqual(response.json()['products'][2]['image'], 'http://localhost:8000/images/mjolnir.jpg')
         self.assertEqual(response.status_code, 200)
+
+    def test_seller_should_create_new_product(self):
+        response = self.client.post(
+            '/sellers/1/products/',
+            json.dumps({
+                'name': 'Web Shooters',
+                'category': 'Kids',
+                'price': 299.99,
+                'num_stocks': 220,
+                'short_description': 'Shoot webs everywhere to satisfy your childish dreams!',
+                'full_description': 'Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.',
+                'image': 'web_shooters.jpg'
+            }),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.json()['product_id'], 4)
+        self.assertEqual(response.status_code, 201)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_retrieving_and_creating_products(self):
+        first_response = self.client.put('/sellers/1/products/')
+        second_response = self.client.patch('/sellers/1/products/')
+        third_response = self.client.delete('/sellers/1/products/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
+
+    def test_seller_should_update_product(self):
+        product = Product(
+            name='Web Shooters',
+            category='Kids',
+            price=299.99,
+            num_stocks=220,
+            short_description='Shoot webs everywhere to satisfy your childish dreams!',
+            full_description='Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.',
+            image='web_shooters.jpg'
+        )
+        product.save()
+        response = self.client.put(
+            '/sellers/1/products/4/',
+            json.dumps({
+                'name': 'Web Shooters',
+                'category': 'Kids',
+                'price': 249.99,
+                'num_stocks': 320,
+                'short_description': 'Shoot webs everywhere to accomplish your dreams!',
+                'full_description': 'Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.',
+                'image': 'web_shooters.jpg'
+            }),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 204)
