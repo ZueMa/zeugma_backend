@@ -79,3 +79,27 @@ class ProductsTestCase(TransactionTestCase):
         self.assertEqual(second_response.status_code, 405)
         self.assertEqual(third_response.status_code, 405)
         self.assertEqual(fourth_response.status_code, 405)
+
+    def test_product_details_should_be_present_when_retrieved(self):
+        response = self.client.get('/products/1/')
+
+        self.assertEqual(response.json()['product_id'], 1)
+        self.assertEqual(response.json()['name'], 'Cerebro')
+        self.assertEqual(response.json()['category'], 'Cosmetics')
+        self.assertEqual(response.json()['price'], 1749.99)
+        self.assertEqual(response.json()['num_stocks'], 3)
+        self.assertEqual(response.json()['short_description'], 'Read minds across the globe!')
+        self.assertEqual(response.json()['full_description'], 'Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.')
+        self.assertEqual(response.json()['image'], 'http://localhost:8000/images/cerebro.jpg')
+        self.assertEqual(response.status_code, 200)
+
+    def test_server_should_return_405_with_wrong_HTTP_methods_for_retrieving_product_details(self):
+        first_response = self.client.post('/products/1/')
+        second_response = self.client.put('/products/1/')
+        third_response = self.client.patch('/products/1/')
+        fourth_response = self.client.delete('/products/1/')
+
+        self.assertEqual(first_response.status_code, 405)
+        self.assertEqual(second_response.status_code, 405)
+        self.assertEqual(third_response.status_code, 405)
+        self.assertEqual(fourth_response.status_code, 405)
