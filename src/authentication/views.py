@@ -28,9 +28,9 @@ def authenticate(request):
                     'user_type': user_type
                 }, status=201)
             else:
-                return HttpResponse(status=500)
+                return HttpResponse(status=404)
         except:
-            return HttpResponse(status=500)
+            return HttpResponse(status=404)
     elif (request.method == 'DELETE'):
         return HttpResponse(status=204)
     else:
