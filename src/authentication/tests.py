@@ -43,7 +43,7 @@ class BuyersSignInTestCase(AuthenticationTestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_should_fail_to_sign_in_as_buyer_when_credentials_are_invalid(self):
-        first_response = self.sign_in('jimmyXabier', '12345678', 'buyer')
+        first_response = self.sign_in('fat_bender52', '12345678', 'buyer')
         second_response = self.sign_in('jimmyXavier', 'acbdefgh', 'buyer')
         third_response = self.sign_in('jimmyXavier', '12345678', 'seller')
 
@@ -75,7 +75,7 @@ class SellersSignInTestCase(AuthenticationTestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_should_fail_to_sign_in_as_seller_when_credentials_are_invalid(self):
-        first_response = self.sign_in('fat_bender51', '12345678', 'seller')
+        first_response = self.sign_in('jimmyXavier', '12345678', 'seller')
         second_response = self.sign_in('fat_bender52', 'abcdefgh', 'seller')
         third_response = self.sign_in('fat_bender52', '12345678', 'buyer')
 
