@@ -14,22 +14,19 @@ def authenticate(request):
         password = request_body['password']
         user_type = request_body['user_type']
 
-        try:
-            if (user_type == 'buyer'):
-                user = get_object_or_404(Buyer, username=username)
-            elif (user_type == 'seller'):
-                user = get_object_or_404(Seller, username=username)
-            else:
-                return HttpResponse(status=400)
+        if (user_type == 'buyer'):
+            user = get_object_or_404(Buyer, username=username)
+        elif (user_type == 'seller'):
+            user = get_object_or_404(Seller, username=username)
+        else:
+            return HttpResponse(status=400)
 
-            if (user.password == password):
-                return JsonResponse({
-                    'user_id': user.id,
-                    'user_type': user_type
-                }, status=201)
-            else:
-                return HttpResponse(status=404)
-        except:
+        if (user.password == password):
+            return JsonResponse({
+                'user_id': user.id,
+                'user_type': user_type
+            }, status=201)
+        else:
             return HttpResponse(status=404)
     elif (request.method == 'DELETE'):
         return HttpResponse(status=204)
