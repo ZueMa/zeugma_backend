@@ -94,6 +94,13 @@ class RegisterBuyerTestCase(BuyersTestCase):
             content_type='application/json'
         )
 
+        buyer = Buyer.objects.filter(id=1)
+        self.assertTrue(buyer.exists())
+        self.assertEqual(buyer[0].username, 'jimmyXavier')
+        self.assertEqual(buyer[0].password, '12345678')
+        self.assertEqual(buyer[0].first_name, 'James')
+        self.assertEqual(buyer[0].last_name, 'McAvoy')
+        self.assertEqual(buyer[0].address, '100 Universal City Plaza, Universal City, Los Angeles')
         self.assertEqual(response.status_code, 204)
 
 class RetrieveBuyerInformationTestCase(RegisteredBuyersTestCase):
@@ -157,6 +164,9 @@ class AddItemToCartTestCase(RegisteredBuyersWithCartsTestCase):
     def test_should_add_item_to_cart_when_it_is_not_already_in_cart(self):
         response = self.add_item_to_cart(1)
 
+        product_cart = ProductCart.objects.filter(id=1)
+        self.assertTrue(product_cart.exists())
+        self.assertEqual(product_cart[0].num_items, 1)
         self.assertEqual(response.status_code, 204)
 
     def test_should_fail_to_add_item_to_cart_when_it_is_already_in_cart(self):
@@ -166,6 +176,8 @@ class AddItemToCartTestCase(RegisteredBuyersWithCartsTestCase):
         ).save()
         response = self.add_item_to_cart(1)
 
+        product_cart = ProductCart.objects.filter(id=2)
+        self.assertFalse(product_cart.exists())
         self.assertEqual(response.status_code, 304)
 
 class UpdateItemQuantityTestCase(RegisteredBuyersWithCartsTestCase):
@@ -226,7 +238,7 @@ class DeleteItemFromCartTestCase(RegisteredBuyersWithCartsTestCase):
     def test_should_delete_item_from_cart_when_it_exists(self):
         response = self.client.delete('/buyers/1/cart/items/1/')
 
-        self.assertFalse(ProductCart.objects.filter(cart_id=self.cart.id, product_id=self.product.id).exists())
+        self.assertFalse(ProductCart.objects.filter(id=1).exists())
         self.assertEqual(response.status_code, 204)
 
 class PurchaseCartTestCase(RegisteredBuyersWithCartsTestCase):
@@ -238,12 +250,21 @@ class PurchaseCartTestCase(RegisteredBuyersWithCartsTestCase):
         ).save()
         response = self.client.post('/buyers/1/cart/purchase/')
 
+        purchase = Purchase.objects.filter(id=1)
+        self.assertTrue(purchase.exists())
+        self.assertEqual(purchase[0].buyer.id, 1)
+        self.assertEqual(purchase[0].cart.id, 1)
+        self.assertTrue(purchase[0].cart.is_purchased)
+        self.assertFalse(purchase[0].is_shipped)
+        self.assertEqual(purchase[0].timestamp, date.today())
         self.assertEqual(response.json()['purchase_id'], 1)
         self.assertEqual(response.status_code, 201)
 
     def test_should_fail_to_purchase_cart_when_cart_is_empty(self):
         response = self.client.post('/buyers/1/cart/purchase/')
 
+        purchase = Purchase.objects.filter(id=1)
+        self.assertFalse(purchase.exists())
         self.assertEqual(response.status_code, 304)
 
 class RetrievePurchaseHistoryTestCase(RegisteredBuyersWithCartsTestCase):
