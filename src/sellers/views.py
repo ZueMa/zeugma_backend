@@ -102,8 +102,9 @@ def update_and_delete_product(request, seller_id, product_id):
     elif (request.method == 'DELETE'):
         product = get_object_or_404(Product, id=product_id)
 
+        product.num_stocks = 0
         product.seller=None
-        product.save()
+        product.save(update_fields=['num_stocks', 'seller'])
 
         return HttpResponse(status=204)
     else:
