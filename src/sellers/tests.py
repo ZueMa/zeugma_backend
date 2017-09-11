@@ -1,4 +1,5 @@
 from django.test import TransactionTestCase, Client
+from django.shortcuts import get_object_or_404
 from datetime import date
 from .models import Seller, Order
 from src.products.models import Product
@@ -95,7 +96,7 @@ class RegisterSellerTestCase(SellersTestCase):
         response = self.client.post(
             '/sellers/',
             json.dumps({
-                'username': 'fat_benders52',
+                'username': 'fat_bender52',
                 'password': '12345678',
                 'first_name': 'Michael',
                 'last_name': 'Fassbender',
@@ -106,6 +107,15 @@ class RegisterSellerTestCase(SellersTestCase):
             content_type='application/json'
         )
 
+        seller = Seller.objects.filter(id=1)
+        self.assertTrue(seller.exists())
+        self.assertEqual(seller[0].username, 'fat_bender52')
+        self.assertEqual(seller[0].password, '12345678')
+        self.assertEqual(seller[0].first_name, 'Michael')
+        self.assertEqual(seller[0].last_name, 'Fassbender')
+        self.assertEqual(seller[0].company_name, 'The Brother')
+        self.assertEqual(seller[0].address, '900 Exposition Boulevard, Los Angeles')
+        self.assertEqual(seller[0].description, 'The Brotherhood was founded by Magneto and its members were his primary allies in his early battles with the X-Men during the 1960s. The original Brotherhood ultimately disbanded, with Quicksilver and Scarlet Witch going on to become members of the Avengers.')
         self.assertEqual(response.status_code, 204)
 
 class RetrieveSellerInformationTestCase(RegisteredSellersTestCase):
@@ -168,6 +178,15 @@ class CreateNewProductTestCase(RegisteredSellersWithProductsTestCase):
             content_type='application/json'
         )
 
+        product = Product.objects.filter(id=4)
+        self.assertTrue(product.exists())
+        self.assertEqual(product[0].name, 'Web Shooters')
+        self.assertEqual(product[0].category, 'Kids')
+        self.assertEqual(product[0].price, 299.99)
+        self.assertEqual(product[0].num_stocks, 220)
+        self.assertEqual(product[0].short_description, 'Shoot webs everywhere to satisfy your childish dreams!')
+        self.assertEqual(product[0].full_description, 'Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.')
+        self.assertEqual(product[0].image, 'http://localhost:8000/images/web_shooters.jpg')
         self.assertEqual(response.json()['product_id'], 4)
         self.assertEqual(response.status_code, 201)
 
@@ -188,6 +207,14 @@ class UpdateProductTestCase(RegisteredSellersWithMoreProductsTestCase):
             content_type='application/json'
         )
 
+        product = get_object_or_404(Product, id=4)
+        self.assertEqual(product.name, 'Web Shooters')
+        self.assertEqual(product.category, 'Kids')
+        self.assertEqual(product.price, 249.99)
+        self.assertEqual(product.num_stocks, 320)
+        self.assertEqual(product.short_description, 'Shoot webs everywhere to accomplish your dreams!')
+        self.assertEqual(product.full_description, 'Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.')
+        self.assertEqual(product.image, 'http://localhost:8000/images/web_shooters.jpg')
         self.assertEqual(response.status_code, 204)
 
 class DeleteProductTestCase(RegisteredSellersWithMoreProductsTestCase):
@@ -195,6 +222,10 @@ class DeleteProductTestCase(RegisteredSellersWithMoreProductsTestCase):
     def test_should_delete_product_when_requested(self):
         response = self.client.delete('/sellers/1/products/4/')
 
+        product = Product.objects.filter(id=4)
+        self.assertTrue(product.exists())
+        self.assertIsNone(product[0].seller)
+        self.assertEqual(product[0].num_stocks, 0)
         self.assertEqual(response.status_code, 204)
 
 class RetrieveOrderHistoryTestCase(RegisteredSellersWithProductsTestCase):
