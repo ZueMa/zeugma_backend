@@ -1,10 +1,12 @@
+import json
+
+from datetime import date
+
 from django.test import TransactionTestCase, Client
 from django.shortcuts import get_object_or_404
-from datetime import date
+
 from .models import Seller, Order
 from src.products.models import Product
-
-import json
 
 class SellersTestCase(TransactionTestCase):
     reset_sequences = True
