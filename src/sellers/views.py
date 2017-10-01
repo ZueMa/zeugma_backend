@@ -47,10 +47,10 @@ def retrieve_current_seller(request, seller_id):
 def retrieve_and_create_product(request, seller_id):
     if (request.method == 'GET'):
         products_list = get_list_or_404(Product.objects.order_by('id'), seller_id=seller_id)
-        products_response = []
+        products = []
 
         for product in products_list:
-            products_response.append({
+            products.append({
                 'product_id': product.id,
                 'name': product.name,
                 'category': product.category,
@@ -60,7 +60,7 @@ def retrieve_and_create_product(request, seller_id):
             })
 
         return JsonResponse({
-            'products': products_response
+            'products': products
         })
     elif (request.method == 'POST'):
         seller = get_object_or_404(Seller, id=seller_id)
@@ -116,10 +116,10 @@ def retrieve_order_history(request, seller_id):
         return HttpResponse(status=405)
 
     orders_list = get_list_or_404(Order.objects.filter(seller_id=seller_id).order_by('-id'))
-    orders_response = []
+    orders = []
 
     for order in orders_list:
-        orders_response.append({
+        orders.append({
             'order_id': order.id,
             'product_id': order.product.id,
             'name': order.product.name,
@@ -131,5 +131,5 @@ def retrieve_order_history(request, seller_id):
         })
 
     return JsonResponse({
-        'orders': orders_response
+        'orders': orders
     })
