@@ -1,8 +1,9 @@
+import json
+
 from django.test import TestCase, Client
+
 from src.buyers.models import Buyer
 from src.sellers.models import Seller
-
-import json
 
 class AuthenticationTestCase(TestCase):
 
