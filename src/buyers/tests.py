@@ -2,7 +2,7 @@ import json
 
 from datetime import date
 
-from django.test import TransactionTestCase, Client
+from django.test import Client, TransactionTestCase
 from django.shortcuts import get_object_or_404
 
 from .models import Buyer, Cart, ProductCart, Purchase

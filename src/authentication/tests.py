@@ -1,6 +1,6 @@
 import json
 
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 
 from src.buyers.models import Buyer
 from src.sellers.models import Seller
