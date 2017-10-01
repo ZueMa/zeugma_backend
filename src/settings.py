@@ -11,10 +11,10 @@ ALLOWED_HOSTS = []
 CORS_ORIGIN_ALLOW_ALL = True
 
 INSTALLED_APPS = [
-    'src.buyers',
-    'src.sellers',
     'src.authentication',
+    'src.buyers',
     'src.products',
+    'src.sellers',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
