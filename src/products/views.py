@@ -8,10 +8,10 @@ def retrieve_all_products(request):
         return HttpResponse(status=405)
 
     products_list = get_list_or_404(Product.objects.exclude(num_stocks=0).order_by('id'))
-    products_response = []
+    products = []
 
     for product in products_list:
-        products_response.append({
+        products.append({
             'product_id': product.id,
             'name': product.name,
             'category': product.category,
@@ -21,7 +21,7 @@ def retrieve_all_products(request):
         })
 
     return JsonResponse({
-        'products': products_response
+        'products': products
     })
 
 def retrieve_product_information(request, product_id):
