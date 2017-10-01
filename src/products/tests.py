@@ -1,4 +1,5 @@
 from django.test import TransactionTestCase, Client
+
 from .models import Product
 
 class ProductsTestCase(TransactionTestCase):

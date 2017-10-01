@@ -1,8 +1,7 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_list_or_404, get_object_or_404
-from .models import Product
+from django.shortcuts import get_object_or_404, get_list_or_404
 
-import json
+from .models import Product
 
 def retrieve_all_products(request):    
     if (request.method != 'GET'):
