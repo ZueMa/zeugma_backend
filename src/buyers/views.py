@@ -1,12 +1,13 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, get_list_or_404
-from django.views.decorators.csrf import csrf_exempt
+import json
+
 from django.db.models import F
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_list_or_404, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import Buyer, Cart, ProductCart, Purchase
 from src.products.models import Product
-from src.sellers.models import Seller, Order
-
-import json
+from src.sellers.models import Order, Seller
 
 @csrf_exempt
 def register_buyer(request):
