@@ -51,7 +51,7 @@ def retrieve_cart(request, buyer_id):
         cart.save()
     items_list = cart.items.all().order_by('id')
     try:
-        product_carts_list = ProductCart.objects.filter(cart_id=cart.id)
+        product_carts_list = ProductCart.objects.filter(cart_id=cart.id).order_by('product_id')
     except:
         product_carts_list = []
     total_price = 0.0
