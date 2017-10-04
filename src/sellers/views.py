@@ -46,7 +46,7 @@ def retrieve_current_seller(request, seller_id):
 @csrf_exempt
 def retrieve_and_create_product(request, seller_id):
     if (request.method == 'GET'):
-        products_list = get_list_or_404(Product.objects.order_by('id'), seller_id=seller_id)
+        products_list = Product.objects.filter(seller_id=seller_id).order_by('id')
         products = []
 
         for product in products_list:
@@ -115,7 +115,7 @@ def retrieve_order_history(request, seller_id):
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
-    orders_list = get_list_or_404(Order.objects.filter(seller_id=seller_id).order_by('-id'))
+    orders_list = Order.objects.filter(seller_id=seller_id).order_by('-id')
     orders = []
 
     for order in orders_list:
