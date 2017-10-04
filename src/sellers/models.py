@@ -9,15 +9,9 @@ class Seller(models.Model):
     address = models.TextField()
     description = models.TextField()
 
-    def __str__(self):
-        return 'Seller #{}'.format(self.id)
-
 class Order(models.Model):
     seller = models.ForeignKey('Seller')
     product = models.ForeignKey('products.Product')
     num_items = models.IntegerField()
     revenue = models.FloatField()
     timestamp = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return 'Order #{}'.format(self.id)
