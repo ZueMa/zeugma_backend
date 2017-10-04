@@ -1,11 +1,11 @@
 from django.db import models
 
 class Seller(models.Model):
-    username = models.CharField(max_length=32)
-    password = models.CharField(max_length=16)
-    first_name = models.CharField(max_length=32)
-    last_name = models.CharField(max_length=32)
-    company_name = models.CharField(max_length=32)
+    username = models.CharField(max_length=128)
+    password = models.CharField(max_length=32)
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    company_name = models.CharField(max_length=128)
     address = models.TextField()
     description = models.TextField()
 
