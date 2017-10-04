@@ -126,7 +126,7 @@ def update_and_delete_item(request, buyer_id, item_id):
         return HttpResponse(status=204)
     elif (request.method == 'DELETE'):
         buyer = get_object_or_404(Buyer, id=buyer_id)
-        cart = get_object_or_404(Cart, buyer_id=buyer.id)
+        cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
         product = get_object_or_404(Product, id=item_id)
         product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
 
