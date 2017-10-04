@@ -6,8 +6,8 @@ class Product(models.Model):
         models.SET_NULL,
         null=True
     )
-    name = models.CharField(max_length=32)
-    category = models.CharField(max_length=16)
+    name = models.CharField(max_length=128)
+    category = models.CharField(max_length=32)
     price = models.FloatField()
     num_stocks = models.IntegerField()
     short_description = models.TextField()
