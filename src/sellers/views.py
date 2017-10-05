@@ -1,6 +1,7 @@
 import json
 
 from django.conf import settings
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_list_or_404, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -46,12 +47,13 @@ def retrieve_current_seller(request, seller_id):
 @csrf_exempt
 def retrieve_and_create_product(request, seller_id):
     if (request.method == 'GET'):
-        products_list = Product.objects.filter(seller_id=seller_id).order_by('id')
+        products_list = Product.objects.filter(Q(seller_id=seller_id) | Q(seller_id=None)).order_by('id')
         products = []
 
         for product in products_list:
             products.append({
                 'product_id': product.id,
+                'seller_id': product.seller_id,
                 'name': product.name,
                 'category': product.category,
                 'price': product.price,
