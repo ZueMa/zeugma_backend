@@ -188,7 +188,7 @@ class CreateNewProductTestCase(RegisteredSellersWithProductsTestCase):
         self.assertEqual(product[0].num_stocks, 220)
         self.assertEqual(product[0].short_description, 'Shoot webs everywhere to satisfy your childish dreams!')
         self.assertEqual(product[0].full_description, 'Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.')
-        self.assertEqual(product[0].image, '/images/web_shooters.jpg')
+        self.assertEqual(product[0].image, 'http://localhost:8000/images/web_shooters.jpg')
         self.assertEqual(response.json()['product_id'], 4)
         self.assertEqual(response.status_code, 201)
 
@@ -216,7 +216,7 @@ class UpdateProductTestCase(RegisteredSellersWithMoreProductsTestCase):
         self.assertEqual(product.num_stocks, 320)
         self.assertEqual(product.short_description, 'Shoot webs everywhere to accomplish your dreams!')
         self.assertEqual(product.full_description, 'Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.')
-        self.assertEqual(product.image, '/images/web_shooters.jpg')
+        self.assertEqual(product.image, 'http://localhost:8000/images/web_shooters.jpg')
         self.assertEqual(response.status_code, 204)
 
 class DeleteProductTestCase(RegisteredSellersWithMoreProductsTestCase):
