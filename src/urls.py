@@ -9,3 +9,6 @@ urlpatterns = [
     url(r'^products/', include('src.products.urls')),
     url(r'^sellers/', include('src.sellers.urls'))
 ]
+
+if (settings.DEBUG):
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

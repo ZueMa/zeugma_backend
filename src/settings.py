@@ -93,4 +93,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-MEDIA_URL = 'http://localhost:8000/images/'
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'zuema-backend/images')
