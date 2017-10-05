@@ -11,10 +11,10 @@ ALLOWED_HOSTS = []
 CORS_ORIGIN_ALLOW_ALL = True
 
 INSTALLED_APPS = [
-    'src.buyers',
-    'src.sellers',
     'src.authentication',
+    'src.buyers',
     'src.products',
+    'src.sellers',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -93,4 +93,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-MEDIA_URL = 'http://localhost:8000/images/'
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'zuema-backend/images')

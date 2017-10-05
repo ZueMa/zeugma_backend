@@ -2,6 +2,19 @@
 
 ZueMa API is an API for amazon-like website.
 
+## Setup
+
+```sh
+$ psql
+$ CREATE DATABASE zuema_db;
+$ CREATE USER zuema_user WITH PASSWORD '12345678';
+$ GRANT ALL ON DATABASE zuema_db TO zuema_user;
+$ \q
+$ python manage.py migrate
+$ python manage.py loaddata buyers_fixtures.json products_fixtures.json sellers_fixtures.json
+$ python manage.py runserver
+```
+
 ## Authentication [/authentication]
 
 ### Sign in to the site [POST]

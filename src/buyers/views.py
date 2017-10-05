@@ -1,12 +1,13 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, get_list_or_404
-from django.views.decorators.csrf import csrf_exempt
+import json
+
 from django.db.models import F
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_list_or_404, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import Buyer, Cart, ProductCart, Purchase
 from src.products.models import Product
-from src.sellers.models import Seller, Order
-
-import json
+from src.sellers.models import Order, Seller
 
 @csrf_exempt
 def register_buyer(request):
@@ -50,14 +51,14 @@ def retrieve_cart(request, buyer_id):
         cart.save()
     items_list = cart.items.all().order_by('id')
     try:
-        product_carts_list = ProductCart.objects.filter(cart_id=cart.id)
+        product_carts_list = ProductCart.objects.filter(cart_id=cart.id).order_by('product_id')
     except:
         product_carts_list = []
     total_price = 0.0
-    items_response = []
+    items = []
 
     for item, product_cart in zip(items_list, product_carts_list):
-        items_response.append({
+        items.append({
             'product_id': item.id,
             'name': item.name,
             'price': item.price,
@@ -71,7 +72,7 @@ def retrieve_cart(request, buyer_id):
     return JsonResponse({
         'cart_id': cart.id,
         'total_price': total_price,
-        'items': items_response
+        'items': items
     })
 
 @csrf_exempt
@@ -125,7 +126,7 @@ def update_and_delete_item(request, buyer_id, item_id):
         return HttpResponse(status=204)
     elif (request.method == 'DELETE'):
         buyer = get_object_or_404(Buyer, id=buyer_id)
-        cart = get_object_or_404(Cart, buyer_id=buyer.id)
+        cart = get_object_or_404(Cart, is_purchased=False, buyer_id=buyer.id)
         product = get_object_or_404(Product, id=item_id)
         product_cart = get_object_or_404(ProductCart, cart_id=cart.id, product_id=product.id)
 
@@ -172,8 +173,8 @@ def retrieve_purchase_history(request, buyer_id):
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
-    purchases_list = get_list_or_404(Purchase.objects.filter(buyer_id=buyer_id).order_by('-id'))
-    purchases_response = []
+    purchases_list = Purchase.objects.filter(buyer_id=buyer_id).order_by('-id')
+    purchases = []
 
     for purchase in purchases_list:
         items_list = purchase.cart.items.all().order_by('id')
@@ -185,7 +186,7 @@ def retrieve_purchase_history(request, buyer_id):
             total_items += product_cart.num_items
             total_price += item.price * product_cart.num_items
 
-        purchases_response.append({
+        purchases.append({
             "purchase_id": purchase.id,
             "cart_id": purchase.cart.id,
             "total_items": total_items,
@@ -195,7 +196,7 @@ def retrieve_purchase_history(request, buyer_id):
         })
 
     return JsonResponse({
-        'purchases': purchases_response
+        'purchases': purchases
     })
 
 def retrieve_purchased_cart(request, buyer_id, purchase_id):
@@ -206,10 +207,10 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
     items_list = purchase.cart.items.all().order_by('id')
     product_carts_list = get_list_or_404(ProductCart, cart_id=purchase.cart.id)
     total_price = 0.0
-    items_response = []
+    items = []
 
     for item, product_cart in zip(items_list, product_carts_list):
-        items_response.append({
+        items.append({
             'product_id': item.id,
             'name': item.name,
             'price': item.price,
@@ -223,5 +224,5 @@ def retrieve_purchased_cart(request, buyer_id, purchase_id):
         "purchase_id": purchase.id,
         "cart_id": purchase.cart.id,
         "total_price": total_price,
-        "items": items_response
+        "items": items
     })

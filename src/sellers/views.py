@@ -1,12 +1,14 @@
+import json
+
 from django.conf import settings
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+
 from .models import Seller
 from src.products.models import Product
 from src.sellers.models import Order
-
-import json
 
 @csrf_exempt
 def register_seller(request):
@@ -45,12 +47,13 @@ def retrieve_current_seller(request, seller_id):
 @csrf_exempt
 def retrieve_and_create_product(request, seller_id):
     if (request.method == 'GET'):
-        products_list = get_list_or_404(Product.objects.order_by('id'), seller_id=seller_id)
-        products_response = []
+        products_list = Product.objects.filter(Q(seller_id=seller_id) | Q(seller_id=None)).order_by('id')
+        products = []
 
         for product in products_list:
-            products_response.append({
+            products.append({
                 'product_id': product.id,
+                'seller_id': product.seller_id,
                 'name': product.name,
                 'category': product.category,
                 'price': product.price,
@@ -59,7 +62,7 @@ def retrieve_and_create_product(request, seller_id):
             })
 
         return JsonResponse({
-            'products': products_response
+            'products': products
         })
     elif (request.method == 'POST'):
         seller = get_object_or_404(Seller, id=seller_id)
@@ -72,7 +75,7 @@ def retrieve_and_create_product(request, seller_id):
             num_stocks=request_body['num_stocks'],
             short_description=request_body['short_description'],
             full_description=request_body['full_description'],
-            image='{}{}'.format(settings.MEDIA_URL, request_body['image']),
+            image='http://localhost:8000{}{}'.format(settings.MEDIA_URL, request_body['image']),
             seller=seller
         )
         product.save()
@@ -95,7 +98,7 @@ def update_and_delete_product(request, seller_id, product_id):
         product.num_stocks = request_body['num_stocks']
         product.short_description = request_body['short_description']
         product.full_description = request_body['full_description']
-        product.image = '{}{}'.format(settings.MEDIA_URL, request_body['image'])
+        product.image = 'http://localhost:8000{}{}'.format(settings.MEDIA_URL, request_body['image'])
         product.save()
 
         return HttpResponse(status=204)
@@ -114,11 +117,11 @@ def retrieve_order_history(request, seller_id):
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
-    orders_list = get_list_or_404(Order.objects.filter(seller_id=seller_id).order_by('-id'))
-    orders_response = []
+    orders_list = Order.objects.filter(seller_id=seller_id).order_by('-id')
+    orders = []
 
     for order in orders_list:
-        orders_response.append({
+        orders.append({
             'order_id': order.id,
             'product_id': order.product.id,
             'name': order.product.name,
@@ -130,5 +133,5 @@ def retrieve_order_history(request, seller_id):
         })
 
     return JsonResponse({
-        'orders': orders_response
+        'orders': orders
     })

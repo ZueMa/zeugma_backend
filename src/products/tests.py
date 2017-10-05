@@ -1,4 +1,5 @@
-from django.test import TransactionTestCase, Client
+from django.test import Client, TransactionTestCase
+
 from .models import Product
 
 class ProductsTestCase(TransactionTestCase):
@@ -60,18 +61,21 @@ class RetrieveAllProductsTestcase(ProductsTestCase):
         self.assertEqual(response_body['products'][0]['name'], 'Cerebro')
         self.assertEqual(response_body['products'][0]['category'], 'Cosmetics')
         self.assertEqual(response_body['products'][0]['price'], 1749.99)
+        self.assertEqual(response_body['products'][0]['num_stocks'], 3)
         self.assertEqual(response_body['products'][0]['short_description'], 'Read minds across the globe!')
         self.assertEqual(response_body['products'][0]['image'], 'http://localhost:8000/images/cerebro.jpg')
         self.assertEqual(response_body['products'][1]['product_id'], 2)
         self.assertEqual(response_body['products'][1]['name'], 'Invisibility Cloak')
         self.assertEqual(response_body['products'][1]['category'], 'Clothes')
         self.assertEqual(response_body['products'][1]['price'], 799.99)
+        self.assertEqual(response_body['products'][1]['num_stocks'], 3)
         self.assertEqual(response_body['products'][1]['short_description'], 'Hide from anything, even death!')
         self.assertEqual(response_body['products'][1]['image'], 'http://localhost:8000/images/invisibility_cloak.jpg')
         self.assertEqual(response_body['products'][2]['product_id'], 3)
         self.assertEqual(response_body['products'][2]['name'], 'Mjolnir')
         self.assertEqual(response_body['products'][2]['category'], 'Sports')
         self.assertEqual(response_body['products'][2]['price'], 2499.99)
+        self.assertEqual(response_body['products'][2]['num_stocks'], 3)
         self.assertEqual(response_body['products'][2]['short_description'], 'Weight-lifting like never before!')
         self.assertEqual(response_body['products'][2]['image'], 'http://localhost:8000/images/mjolnir.jpg')
         self.assertEqual(response.status_code, 200)
