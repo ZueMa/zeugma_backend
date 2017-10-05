@@ -81,10 +81,6 @@ AUTH_PASSWORD_VALIDATORS = [
     }
 ]
 
-# FIXTURE_DIRS = (
-#     os.path.join(os.path.dirname(BASE_DIR), 'zuema-backend/fixtures')
-# )
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
