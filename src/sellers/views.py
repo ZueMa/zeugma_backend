@@ -73,7 +73,7 @@ def retrieve_and_create_product(request, seller_id):
             num_stocks=request_body['num_stocks'],
             short_description=request_body['short_description'],
             full_description=request_body['full_description'],
-            image='{}{}'.format(settings.MEDIA_URL, request_body['image']),
+            image='http://localhost:8000{}{}'.format(settings.MEDIA_URL, request_body['image']),
             seller=seller
         )
         product.save()
@@ -96,7 +96,7 @@ def update_and_delete_product(request, seller_id, product_id):
         product.num_stocks = request_body['num_stocks']
         product.short_description = request_body['short_description']
         product.full_description = request_body['full_description']
-        product.image = '{}{}'.format(settings.MEDIA_URL, request_body['image'])
+        product.image = 'http://localhost:8000{}{}'.format(settings.MEDIA_URL, request_body['image'])
         product.save()
 
         return HttpResponse(status=204)
