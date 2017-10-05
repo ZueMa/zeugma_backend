@@ -16,6 +16,7 @@ def retrieve_all_products(request):
             'name': product.name,
             'category': product.category,
             'price': product.price,
+            'num_stocks': product.num_stocks,
             'short_description': product.short_description,
             'image': product.image
         })
