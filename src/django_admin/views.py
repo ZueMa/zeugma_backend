@@ -44,3 +44,15 @@ def retrieve_all_purchases(request):
     return JsonResponse({
         'purchases': purchases
     })
+
+@csrf_exempt
+def ship_purchase(request, purchase_id):
+    if (request.method != 'PATCH'):
+        return HttpResponse(status=405)
+
+    purchase = get_object_or_404(Purchase, id=purchase_id)
+
+    purchase.is_shipped = True
+    purchase.save(update_fields=['is_shipped'])
+
+    return HttpResponse(status=204)
