@@ -3,8 +3,7 @@ import json
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_list_or_404, get_object_or_404
-from src.buyers.models import Buyer, Cart, ProductCart, Purchase
-from src.sellers.models import Order
+from src.buyers.models import ProductCart, Purchase
 
 @csrf_exempt
 def authenticate(request):
@@ -20,13 +19,11 @@ def authenticate(request):
     else:
         return HttpResponse(status=405)
 
-
-def retrieve_all_purchases(request):
-    
+def retrieve_all_purchases(request): 
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
-    purchase_list = Purchase.objects.order_by('-id')
+    purchase_list = Purchase.objects.filter(is_shipped=False).order_by('-id')
     purchases = []
 
     for purchase in purchase_list:
@@ -36,17 +33,12 @@ def retrieve_all_purchases(request):
         total_price = 0.0
 
         for item, product_cart in zip(items_list, product_carts_list):
-            total_items += product_cart.num_items
             total_price += item.price * product_cart.num_items
 
         purchases.append({
-            "buyer_id": purchase.buyer.id,
             "purchase_id": purchase.id,
-            "cart_id": purchase.cart.id,
-            "total_items": total_items,
             "total_price": total_price,
-            "is_shipped": purchase.is_shipped,
-            "timestamp": purchase.timestamp
+            "buyer_username": purchase.buyer.username
         })
 
     return JsonResponse({
