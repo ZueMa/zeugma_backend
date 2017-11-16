@@ -58,7 +58,7 @@ def ship_purchase(request, purchase_id):
 
     return HttpResponse(status=204)
 
-def retrieve_all_unconfirm_products(request): 
+def retrieve_all_unconfirmed_products(request): 
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
@@ -77,13 +77,13 @@ def retrieve_all_unconfirm_products(request):
         'products': products
     })
 
-    def confirm_specified_product(request, product_id):
-        if (request.method != 'PATCH'):
-          return HttpResponse(status=405)
+def confirm_specified_product(request, product_id):
+    if (request.method != 'PATCH'):
+        return HttpResponse(status=405)
 
-        product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Product, id=product_id)
 
-        product.is_confirmed = True
-        product.save(update_fields=['is_confirmed'])
+    product.is_confirmed = True
+    product.save(update_fields=['is_confirmed'])
 
-        return HttpResponse(status=204)
+    return HttpResponse(status=204)
