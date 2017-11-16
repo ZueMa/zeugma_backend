@@ -76,3 +76,14 @@ def retrieve_all_unconfirm_products(request):
     return JsonResponse({
         'products': products
     })
+
+    def confirm_specified_product(request, product_id):
+        if (request.method != 'PATCH'):
+          return HttpResponse(status=405)
+
+        product = get_object_or_404(Product, id=product_id)
+
+        product.is_confirmed = True
+        product.save(update_fields=['is_confirmed'])
+
+        return HttpResponse(status=204)
