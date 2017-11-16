@@ -58,7 +58,7 @@ def ship_purchase(request, purchase_id):
 
     return HttpResponse(status=204)
 
-def retrieve_all_unconfirm(request): 
+def retrieve_all_unconfirm_products(request): 
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
