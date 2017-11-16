@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_list_or_404, get_object_or_404
 from src.buyers.models import ProductCart, Purchase
+from src.products.models import Product
 
 @csrf_exempt
 def authenticate(request):
@@ -54,5 +55,35 @@ def ship_purchase(request, purchase_id):
 
     purchase.is_shipped = True
     purchase.save(update_fields=['is_shipped'])
+
+    return HttpResponse(status=204)
+
+def retrieve_all_unconfirmed_products(request): 
+    if (request.method != 'GET'):
+        return HttpResponse(status=405)
+
+    product_list = Product.objects.filter(is_confirmed=False).order_by('-id')
+    products = []
+
+    for product in product_list:
+        products.append({
+            "product_id": product.id,
+            "name": product.name,
+            "price": product.price,
+            "short_description": product.short_description
+        })
+
+    return JsonResponse({
+        'products': products
+    })
+
+def confirm_specified_product(request, product_id):
+    if (request.method != 'PATCH'):
+        return HttpResponse(status=405)
+
+    product = get_object_or_404(Product, id=product_id)
+
+    product.is_confirmed = True
+    product.save(update_fields=['is_confirmed'])
 
     return HttpResponse(status=204)

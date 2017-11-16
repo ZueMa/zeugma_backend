@@ -12,6 +12,7 @@ class Product(models.Model):
     num_stocks = models.IntegerField()
     short_description = models.TextField()
     full_description = models.TextField()
+    is_confirmed = models.BooleanField(default=False)
     image = models.URLField(
         null=True,
         blank=True
