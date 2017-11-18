@@ -77,6 +77,7 @@ def retrieve_all_unconfirmed_products(request):
         'products': products
     })
 
+@csrf_exempt
 def confirm_specified_product(request, product_id):
     if (request.method != 'PATCH'):
         return HttpResponse(status=405)
