@@ -39,6 +39,6 @@ def retrieve_product_information(request, product_id):
         'num_stocks': product.num_stocks,
         'short_description': product.short_description,
         'full_description': product.full_description,
-        'is_confirmed':product.is_confirmed,
+        'is_confirmed': product.is_confirmed,
         'image': product.image
     })
