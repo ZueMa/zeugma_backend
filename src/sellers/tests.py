@@ -45,6 +45,7 @@ class RegisteredSellersWithProductsTestCase(RegisteredSellersTestCase):
             num_stocks=3,
             short_description='Read minds across the globe!',
             full_description='Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.',
+            is_confirmed=True,
             image='http://localhost:8000/images/cerebro.jpg',
             seller=self.seller
         )
@@ -57,6 +58,7 @@ class RegisteredSellersWithProductsTestCase(RegisteredSellersTestCase):
             num_stocks=3,
             short_description='Hide from anything, even death!',
             full_description='An invisibility cloak is a magical garment which renders whomever or whatever it covers unseeable. These are common items that are massed produced in the wizarding world. The first known cloak was made by Death for Ignotus Peverell in the 13th century and it is one of a kind.',
+            is_confirmed=True,
             image='http://localhost:8000/images/invisibility_cloak.jpg',
             seller=self.seller
         )
@@ -69,6 +71,7 @@ class RegisteredSellersWithProductsTestCase(RegisteredSellersTestCase):
             num_stocks=3,
             short_description='Weight-lifting like never before!',
             full_description='In Norse mythology, Mjolnir is the hammer of Thor, a major Norse god associated with thunder. Mjolnir is depicted in Norse mythology as one of the most fearsome and powerful weapons in existence, capable of leveling mountains.',
+            is_confirmed=False,
             image='http://localhost:8000/images/mjolnir.jpg',
             seller=self.seller
         )
@@ -87,6 +90,7 @@ class RegisteredSellersWithMoreProductsTestCase(RegisteredSellersWithProductsTes
             num_stocks=220,
             short_description='Shoot webs everywhere to satisfy your childish dreams!',
             full_description='Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.',
+            is_confirmed=False,
             image='web_shooters.jpg',
             seller=self.seller
         )
