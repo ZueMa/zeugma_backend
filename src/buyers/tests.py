@@ -281,15 +281,18 @@ class RetrievePurchaseHistoryTestCase(RegisteredBuyersWithCartsTestCase):
         ).save()
         Purchase(
             cart=self.cart,
-            buyer=self.buyer
+            buyer=self.buyer,
+            is_shipped=True
         ).save()
         Purchase(
             cart=self.cart,
-            buyer=self.buyer
+            buyer=self.buyer,
+            is_shipped=True
         ).save()
         Purchase(
             cart=self.cart,
-            buyer=self.buyer
+            buyer=self.buyer,
+            is_shipped=False
         ).save()
         self.cart.is_purchased = True
         self.cart.save(update_fields=['is_purchased'])
@@ -304,19 +307,19 @@ class RetrievePurchaseHistoryTestCase(RegisteredBuyersWithCartsTestCase):
         self.assertEqual(response_body['purchases'][0]['cart_id'], 1)
         self.assertEqual(response_body['purchases'][0]['total_items'], 1)
         self.assertEqual(response_body['purchases'][0]['total_price'], 1749.99)
-        self.assertEqual(response_body['purchases'][0]['is_shipped'], True)
+        self.assertTrue(response_body['purchases'][0]['is_shipped'])
         self.assertEqual(response_body['purchases'][0]['timestamp'], str(date.today()))
         self.assertEqual(response_body['purchases'][1]['purchase_id'], 2)
         self.assertEqual(response_body['purchases'][1]['cart_id'], 1)
         self.assertEqual(response_body['purchases'][1]['total_items'], 1)
         self.assertEqual(response_body['purchases'][1]['total_price'], 1749.99)
-        self.assertEqual(response_body['purchases'][1]['is_shipped'], True)
+        self.assertTrue(response_body['purchases'][1]['is_shipped'])
         self.assertEqual(response_body['purchases'][1]['timestamp'], str(date.today()))
         self.assertEqual(response_body['purchases'][2]['purchase_id'], 1)
         self.assertEqual(response_body['purchases'][2]['cart_id'], 1)
         self.assertEqual(response_body['purchases'][2]['total_items'], 1)
         self.assertEqual(response_body['purchases'][2]['total_price'], 1749.99)
-        self.assertEqual(response_body['purchases'][2]['is_shipped'], True)
+        self.assertFalse(response_body['purchases'][2]['is_shipped'])
         self.assertEqual(response_body['purchases'][2]['timestamp'], str(date.today()))
         self.assertEqual(response.status_code, 200)
 
@@ -332,7 +335,8 @@ class RetrievePurchaseHistoryTestCase(RegisteredBuyersWithCartsTestCase):
         ).save()
         Purchase(
             cart=self.cart,
-            buyer=self.buyer
+            buyer=self.buyer,
+            is_shipped=True
         ).save()
         self.cart.is_purchased = True
         self.cart.save(update_fields=['is_purchased'])
