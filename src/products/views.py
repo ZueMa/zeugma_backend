@@ -7,20 +7,19 @@ def retrieve_all_products(request):
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
-    products_list = Product.objects.order_by('id')
+    products_list = Product.objects.filter(is_confirmed=True).order_by('id')
     products = []
 
     for product in products_list:
-        if (product.is_confirmed):
-            products.append({
-                'product_id': product.id,
-                'name': product.name,
-                'category': product.category,
-                'price': product.price,
-                'num_stocks': product.num_stocks,
-                'short_description': product.short_description,
-                'image': product.image
-            })
+        products.append({
+            'product_id': product.id,
+            'name': product.name,
+            'category': product.category,
+            'price': product.price,
+            'num_stocks': product.num_stocks,
+            'short_description': product.short_description,
+            'image': product.image
+        })
 
     return JsonResponse({
         'products': products
