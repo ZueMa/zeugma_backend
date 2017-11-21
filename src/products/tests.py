@@ -123,7 +123,8 @@ class RetrieveProductInformationTestCase(ProductsTestCase):
         self.assertEqual(response_body['price'], 1749.99)
         self.assertEqual(response_body['num_stocks'], 3)
         self.assertEqual(response_body['short_description'], 'Read minds across the globe!')
-        self.assertEqual(response_body['full_description'], 'Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.')
+        self.assertEqual(response_body['full_description'], 'Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.'),
+        self.assertFalse(response_body['is_confirmed'])
         self.assertEqual(response_body['image'], 'http://localhost:8000/images/cerebro.jpg')
         self.assertEqual(response.status_code, 200)
 
