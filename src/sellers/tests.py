@@ -45,6 +45,7 @@ class RegisteredSellersWithProductsTestCase(RegisteredSellersTestCase):
             num_stocks=3,
             short_description='Read minds across the globe!',
             full_description='Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.',
+            is_confirmed=True,
             image='http://localhost:8000/images/cerebro.jpg',
             seller=self.seller
         )
@@ -57,6 +58,7 @@ class RegisteredSellersWithProductsTestCase(RegisteredSellersTestCase):
             num_stocks=3,
             short_description='Hide from anything, even death!',
             full_description='An invisibility cloak is a magical garment which renders whomever or whatever it covers unseeable. These are common items that are massed produced in the wizarding world. The first known cloak was made by Death for Ignotus Peverell in the 13th century and it is one of a kind.',
+            is_confirmed=True,
             image='http://localhost:8000/images/invisibility_cloak.jpg',
             seller=self.seller
         )
