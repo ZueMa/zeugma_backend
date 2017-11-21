@@ -11,7 +11,7 @@ def retrieve_all_products(request):
     products = []
 
     for product in products_list:
-        if (product.is_confirm):
+        if (product.is_confirmed):
             products.append({
                 'product_id': product.id,
                 'name': product.name,
@@ -40,5 +40,6 @@ def retrieve_product_information(request, product_id):
         'num_stocks': product.num_stocks,
         'short_description': product.short_description,
         'full_description': product.full_description,
+        'is_confirmed':product.is_confirmed,
         'image': product.image
     })

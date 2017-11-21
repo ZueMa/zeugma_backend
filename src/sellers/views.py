@@ -58,7 +58,6 @@ def retrieve_and_create_product(request, seller_id):
                 'category': product.category,
                 'price': product.price,
                 'short_description': product.short_description,
-                'is_confirmed':product.is_confirmed,
                 'image': product.image
             })
 
