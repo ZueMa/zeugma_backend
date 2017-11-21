@@ -7,7 +7,7 @@ def retrieve_all_products(request):
     if (request.method != 'GET'):
         return HttpResponse(status=405)
 
-    products_list = Product.objects.order_by('id')
+    products_list = Product.objects.filter(is_confirmed=True).order_by('id')
     products = []
 
     for product in products_list:
@@ -39,5 +39,6 @@ def retrieve_product_information(request, product_id):
         'num_stocks': product.num_stocks,
         'short_description': product.short_description,
         'full_description': product.full_description,
+        'is_confirmed': product.is_confirmed,
         'image': product.image
     })
