@@ -22,6 +22,7 @@ class RetrieveAllProductsTestcase(ProductsTestCase):
             num_stocks=3,
             short_description='Read minds across the globe!',
             full_description='Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.',
+            is_confirmed=True,
             image='http://localhost:8000/images/cerebro.jpg',
             seller=None
         )
@@ -34,6 +35,7 @@ class RetrieveAllProductsTestcase(ProductsTestCase):
             num_stocks=3,
             short_description='Hide from anything, even death!',
             full_description='An invisibility cloak is a magical garment which renders whomever or whatever it covers unseeable. These are common items that are massed produced in the wizarding world. The first known cloak was made by Death for Ignotus Peverell in the 13th century and it is one of a kind.',
+            is_confirmed=True,
             image='http://localhost:8000/images/invisibility_cloak.jpg',
             seller=None
         )
@@ -46,10 +48,23 @@ class RetrieveAllProductsTestcase(ProductsTestCase):
             num_stocks=3,
             short_description='Weight-lifting like never before!',
             full_description='In Norse mythology, Mjolnir is the hammer of Thor, a major Norse god associated with thunder. Mjolnir is depicted in Norse mythology as one of the most fearsome and powerful weapons in existence, capable of leveling mountains.',
+            is_confirmed=True,
             image='http://localhost:8000/images/mjolnir.jpg',
             seller=None
         )
         self.product_3.save()
+        
+        self.product_4 = Product(
+            name='Web Shooters',
+            category='Kids',
+            price=299.99,
+            num_stocks=3,
+            short_description='Shoot webs everywhere to satisfy your childish dreams!',
+            full_description='Web shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that ca nshoot thin strands of a special \'web fluids\' (the chemical composition of which is not known) at high pressure.',
+            image='http://localhost:8000/images/web_shooters.jpg',
+            seller=None
+        )
+        self.product_4.save()
 
     def test_should_retrieve_all_products_when_requested(self):
         response = self.client.get('/products/')
@@ -108,7 +123,8 @@ class RetrieveProductInformationTestCase(ProductsTestCase):
         self.assertEqual(response_body['price'], 1749.99)
         self.assertEqual(response_body['num_stocks'], 3)
         self.assertEqual(response_body['short_description'], 'Read minds across the globe!')
-        self.assertEqual(response_body['full_description'], 'Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.')
+        self.assertEqual(response_body['full_description'], 'Cerebro is a fictional device appearing in American comic books published by Marvel Comics. The device is used by the X-Men (in particular, their leader, Professor Charles Xavier) to detect humans, specifically mutants.'),
+        self.assertFalse(response_body['is_confirmed'])
         self.assertEqual(response_body['image'], 'http://localhost:8000/images/cerebro.jpg')
         self.assertEqual(response.status_code, 200)
 
