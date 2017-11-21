@@ -71,7 +71,6 @@ class RegisteredSellersWithProductsTestCase(RegisteredSellersTestCase):
             num_stocks=3,
             short_description='Weight-lifting like never before!',
             full_description='In Norse mythology, Mjolnir is the hammer of Thor, a major Norse god associated with thunder. Mjolnir is depicted in Norse mythology as one of the most fearsome and powerful weapons in existence, capable of leveling mountains.',
-            is_confirmed=False,
             image='http://localhost:8000/images/mjolnir.jpg',
             seller=self.seller
         )
@@ -90,7 +89,6 @@ class RegisteredSellersWithMoreProductsTestCase(RegisteredSellersWithProductsTes
             num_stocks=220,
             short_description='Shoot webs everywhere to satisfy your childish dreams!',
             full_description='Web Shooters are twin devices, worn on your wrists beneath the gauntlets of your costume, that can shoot thin strands of a special \'web fluid\' (the chemical composition of which is not known) at high pressure.',
-            is_confirmed=False,
             image='web_shooters.jpg',
             seller=self.seller
         )
