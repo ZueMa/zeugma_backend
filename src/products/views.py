@@ -11,15 +11,16 @@ def retrieve_all_products(request):
     products = []
 
     for product in products_list:
-        products.append({
-            'product_id': product.id,
-            'name': product.name,
-            'category': product.category,
-            'price': product.price,
-            'num_stocks': product.num_stocks,
-            'short_description': product.short_description,
-            'image': product.image
-        })
+        if (product.is_confirm):
+            products.append({
+                'product_id': product.id,
+                'name': product.name,
+                'category': product.category,
+                'price': product.price,
+                'num_stocks': product.num_stocks,
+                'short_description': product.short_description,
+                'image': product.image
+            })
 
     return JsonResponse({
         'products': products
