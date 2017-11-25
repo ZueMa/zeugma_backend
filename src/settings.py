@@ -13,7 +13,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 INSTALLED_APPS = [
     'src.authentication',
     'src.buyers',
-    'src.django_admin',
+    'src.zuema_admin',
     'src.products',
     'src.sellers',
     'corsheaders',

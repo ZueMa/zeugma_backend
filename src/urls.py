@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', include('src.django_admin.urls')),
+    url(r'^admin/', include('src.zuema_admin.urls')),
     url(r'^authentication/', include('src.authentication.urls')),
     url(r'^buyers/', include('src.buyers.urls')),
     url(r'^products/', include('src.products.urls')),
