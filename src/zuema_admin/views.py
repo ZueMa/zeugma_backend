@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_list_or_404, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
+from .models import Admin
 from src.buyers.models import ProductCart, Purchase
 from src.products.models import Product
 
@@ -12,7 +13,8 @@ def authenticate(request):
     if (request.method == 'POST'):
         request_body = json.loads(request.body.decode('utf-8'))
         
-        if (request_body['username'] == 'Admin' and request_body['password'] == 'ZueMaAdmin'):
+        user = get_object_or_404(Admin, username=request_body['username'])
+        if (user.password == request_body['password']):
             return HttpResponse(status=204)
         else:
             return HttpResponse(status=404)
