@@ -3,6 +3,7 @@ import json
 from django.test import Client, TransactionTestCase
 from django.shortcuts import get_object_or_404
 
+from .models import Admin
 from src.buyers.models import Buyer, Cart, ProductCart, Purchase
 from src.products.models import Product
 from src.sellers.models import Seller
@@ -15,6 +16,15 @@ class AdminTestCase(TransactionTestCase):
         self.client = Client()
 
 class AuthenticationTestCase(AdminTestCase):
+
+    @classmethod
+    def setUp(self):
+        super().setUp()
+
+        Admin(
+            username='Admin',
+            password='ZueMaAdmin'
+        ).save()
 
     def sign_in(self, username, password):
         return self.client.post(
