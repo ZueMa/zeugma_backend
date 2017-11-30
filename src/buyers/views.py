@@ -191,7 +191,7 @@ def retrieve_purchase_history(request, buyer_id):
             "cart_id": purchase.cart.id,
             "total_items": total_items,
             "total_price": total_price,
-            "is_shipped": True,
+            "is_shipped": purchase.is_shipped,
             "timestamp": purchase.timestamp
         })
 
